@@ -33,10 +33,10 @@ pip install tensorflow==2.10
 
 # Install other required packages
 pip install pandas numpy matplotlib seaborn scikit-learn jupyter notebook opencv-python pillow
-
+```
 ## STEP 3: Setup
 ### Open Anaconda Prompt (in your project folder):
-
+```
 # Verify GPU is working
 python -c "import tensorflow as tf; print('GPU Available:', tf.config.list_physical_devices('GPU'))"
 
@@ -80,7 +80,7 @@ git push origin main
 ### Expected Output:
 `GPU Available: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]`
 
-## Step 4: Download the Dataset
+## STEP 4: Download the Dataset
 ### Option 1: Manual Download
 #### Go to: https://www.kaggle.com/datasets/nafishamoin/bangladeshi-crops-disease-dataset
 ### Option 2: Kaggle API (For automation)
@@ -95,9 +95,32 @@ pip install kaggle
 kaggle datasets download -d nafishamoin/bangladeshi-crops-disease-dataset
 unzip bangladeshi-crops-disease-dataset.zip -d data/
 ```
-## How to run (for each person)
+## STEP 5: How to run (for each person)
 ```
 conda activate plant_disease
-cd "C:\Users\user\Desktop\_folder_name_"
+cd "C:\path\to\project"
 python src/train_all_models.py --person _person_name_
+```
+## STEP 6: Git Workflow
+### Daily Workflow:
+```
+# 1. Get latest changes from teammates
+git pull origin main
+
+# 2. Do your work (train models, update code)
+
+# 3. Save your changes
+git add .
+git commit -m "Trained ResNet50, achieved 94% accuracy"
+
+# 4. Upload to GitHub
+git push origin main
+```
+### If there is a conflict:
+```
+git pull origin main --rebase
+# Fix any conflicts in files
+git add .
+git rebase --continue
+git push origin main
 ```
