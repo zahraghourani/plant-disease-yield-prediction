@@ -95,3 +95,9 @@ pip install kaggle
 kaggle datasets download -d nafishamoin/bangladeshi-crops-disease-dataset
 unzip bangladeshi-crops-disease-dataset.zip -d data/
 ```
+## How to run (for each person)
+```
+conda activate plant_disease
+cd "C:\Users\user\Desktop\_folder_name_"
+python src/train_all_models.py --person _person_name_
+```
