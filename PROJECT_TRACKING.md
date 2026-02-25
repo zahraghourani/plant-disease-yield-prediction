@@ -14,7 +14,8 @@
 ## 🚀 Quick Start for Team Members
 
 ### Setup
-1. Clone repo: `git clone https://github.com/YOUR_USERNAME/plant-disease-yield-prediction.git`
+1. Clone repo: `git clone https://github.com/zahraghourani
+/plant-disease-yield-prediction.git`
 2. Install requirements: `pip install -r requirements.txt`
 3. Run training: `python src/train_keras_models.py --person [zahra|sireen|tala]`
 
