@@ -1,0 +1,73 @@
+# Project Configuration
+project_name: "Plant Disease Detection and Crop Yield Prediction"
+dataset: "Bangladeshi Crops Disease Dataset"
+num_classes: 15
+
+# Paths
+data_dir: "C:/Users/zahra.elghourani/Desktop/Zahra/Plant Disease Detection and Crop Yield Prediction/data/BangladeshiCropsDisease"
+checkpoint_dir: "./checkpoints"
+results_dir: "./results"
+
+# Image Settings
+image_size: [224, 224]
+batch_size: 16  # Reduced for RTX 2080 8GB
+validation_split: 0.15
+test_split: 0.15
+
+# Training Settings
+epochs: 50
+learning_rate: 0.0001
+early_stopping_patience: 10
+reduce_lr_patience: 5
+
+# GPU Settings
+mixed_precision: true
+memory_growth: true
+
+# Model Assignments (38 models divided among 3 people)
+models:
+  zahra:
+    - ResNet50
+    - ResNet101
+    - ResNet152
+    - ResNet50V2
+    - ResNet101V2
+    - ResNet152V2
+    - VGG16
+    - VGG19
+    - Xception
+    - InceptionV3
+    - InceptionResNetV2
+    - MobileNet
+    - MobileNetV2
+    - NASNetMobile
+    
+  sireen:
+    - EfficientNetB0
+    - EfficientNetB1
+    - EfficientNetB2
+    - EfficientNetB3
+    - EfficientNetB4
+    - EfficientNetB5
+    - EfficientNetB6
+    - EfficientNetB7
+    - EfficientNetV2B0
+    - EfficientNetV2B1
+    - EfficientNetV2B2
+    - EfficientNetV2B3
+    - EfficientNetV2S
+    - EfficientNetV2M
+    - EfficientNetV2L
+    
+  tala:
+    - DenseNet121
+    - DenseNet169
+    - DenseNet201
+    - ConvNeXtTiny
+    - ConvNeXtSmall
+    - ConvNeXtBase
+    - ConvNeXtLarge
+    - ConvNeXtXLarge
+    - NASNetLarge
+    - MobileNetV3Small
+    - MobileNetV3Large
