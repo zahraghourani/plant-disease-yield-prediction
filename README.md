@@ -76,13 +76,13 @@ git commit -m "Initial project structure"
 
 # Push to GitHub
 git push origin main
-
 ```
 ### Expected Output:
 `GPU Available: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]`
 
 ## Step 4: Download the Dataset
 ### Option 1: Manual Download
+#### Go to: https://www.kaggle.com/datasets/nafishamoin/bangladeshi-crops-disease-dataset
 ### Option 2: Kaggle API (For automation)
 ```
 # Install Kaggle API
