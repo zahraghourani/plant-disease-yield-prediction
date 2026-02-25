@@ -39,7 +39,7 @@ pip install pandas numpy matplotlib seaborn scikit-learn jupyter notebook opencv
 
 # Verify GPU is working
 python -c "import tensorflow as tf; print('GPU Available:', tf.config.list_physical_devices('GPU'))"
-```
+
 # Install git if not present
 conda install git -y
 
@@ -76,7 +76,7 @@ git commit -m "Initial project structure"
 
 # Push to GitHub
 git push origin main
-```
+
 ```
 ### Expected Output:
 `GPU Available: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]`
