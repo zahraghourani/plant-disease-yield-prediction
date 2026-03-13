@@ -95,11 +95,11 @@ pip install kaggle
 kaggle datasets download -d nafishamoin/bangladeshi-crops-disease-dataset
 unzip bangladeshi-crops-disease-dataset.zip -d data/
 ```
-## STEP 5: How to run (for each person)
+## STEP 5: How to run the Keras Models(for each person)
 ```
 conda activate plant_disease
 cd "C:\path\to\project"
-python src/train_all_models.py --person _person_name_
+python src/train_keras_models.py --person _person_name_ (zahra/sireen/tala)
 ```
 ## STEP 6: Git Workflow
 ### Daily Workflow:

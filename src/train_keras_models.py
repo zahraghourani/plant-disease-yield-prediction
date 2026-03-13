@@ -16,6 +16,14 @@ import tensorflow as tf
 from tensorflow.keras.callbacks import (EarlyStopping, ModelCheckpoint, 
                                        ReduceLROnPlateau, TensorBoard)
 
+import tensorflow as tf
+
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+    for gpu in gpus:
+        tf.config.experimental.set_memory_growth(gpu, True)
+
+print("GPU:", tf.config.list_physical_devices('GPU'))
 # Add src to path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
@@ -25,7 +33,7 @@ from utils import (setup_gpu, calculate_metrics, plot_confusion_matrix,
                   plot_training_history, save_results, Timer, get_model_info)
 
 # Configuration
-DATA_DIR = r"C:\Users\zahra.elghourani\Desktop\Zahra\Plant Disease Detection and Crop Yield Prediction\data\BangladeshiCropsDisease"
+DATA_DIR = r"C:\Users\zahra.elghourani\Desktop\Zahra\Plant Disease Detection and Crop Yield Prediction\data\raw"
 CHECKPOINT_DIR = "./checkpoints"
 RESULTS_DIR = "./results"
 EPOCHS = 50
@@ -40,13 +48,13 @@ MODELS_ZAHRA = [
     'EfficientNetV2S', 'EfficientNetV2M', 'ConvNeXtLarge'
 ]
 
-MODELS_Sireen = [
+MODELS_SIREEN = [
     'VGG19', 'ResNet50', 'ResNet50V2', 'DenseNet121',
     'DenseNet169', 'DenseNet201', 'EfficientNetB3', 'EfficientNetB4',
     'EfficientNetB5', 'EfficientNetV2L', 'ConvNeXtTiny', 'ConvNeXtSmall'
 ]
 
-MODELS_Tala = [
+MODELS_TALA = [
     'ResNet101', 'ResNet101V2', 'InceptionV3',
     'InceptionResNetV2', 'NASNetMobile', 'NASNetLarge', 'EfficientNetB6', 'EfficientNetB7',
     'EfficientNetV2B1', 'EfficientNetV2B2', 'EfficientNetV2B3', 'ConvNeXtBase', 'ConvNeXtXLarge'
@@ -211,7 +219,7 @@ def train_model(model_name, person_name):
 def main():
     parser = argparse.ArgumentParser(description='Train Keras models for plant disease detection')
     parser.add_argument('--person', type=str, required=True, 
-                       choices=['zahra', 'classmate1', 'classmate2'],
+                       choices=['zahra', 'sireen', 'tala'],
                        help='Which person is running the script')
     parser.add_argument('--model', type=str, default=None,
                        help='Train specific model only (optional)')
@@ -223,10 +231,10 @@ def main():
     # Get model list
     if args.person == 'zahra':
         model_list = MODELS_ZAHRA
-    elif args.person == 'classmate1':
-        model_list = MODELS_CLASSMATE1
+    elif args.person == 'sireen':
+        model_list = MODELS_SIREEN
     else:
-        model_list = MODELS_CLASSMATE2
+        model_list = MODELS_TALA
     
     # Train specific model or all
     if args.model:
