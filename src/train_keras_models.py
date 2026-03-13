@@ -34,23 +34,22 @@ LEARNING_RATE = 0.0001
 
 # Model assignments
 MODELS_ZAHRA = [
-    'ResNet50', 'ResNet101', 'ResNet152', 
-    'ResNet50V2', 'ResNet101V2', 'ResNet152V2',
-    'VGG16', 'VGG19', 'Xception', 'InceptionV3', 
-    'InceptionResNetV2', 'MobileNet', 'MobileNetV2', 'NASNetMobile'
+    'Xception', 'VGG16', 'ResNet152', 
+    'ResNet152V2', 'MobileNet', 'MobileNetV2',
+    'EfficientNetB0', 'EfficientNetB1', 'EfficientNetB2', 'EfficientNetV2B0', 
+    'EfficientNetV2S', 'EfficientNetV2M', 'ConvNeXtLarge'
 ]
 
-MODELS_CLASSMATE1 = [
-    'EfficientNetB0', 'EfficientNetB1', 'EfficientNetB2', 'EfficientNetB3',
-    'EfficientNetB4', 'EfficientNetB5', 'EfficientNetB6', 'EfficientNetB7',
-    'EfficientNetV2B0', 'EfficientNetV2B1', 'EfficientNetV2B2', 'EfficientNetV2B3',
-    'EfficientNetV2S', 'EfficientNetV2M', 'EfficientNetV2L'
+MODELS_Sireen = [
+    'VGG19', 'ResNet50', 'ResNet50V2', 'DenseNet121',
+    'DenseNet169', 'DenseNet201', 'EfficientNetB3', 'EfficientNetB4',
+    'EfficientNetB5', 'EfficientNetV2L', 'ConvNeXtTiny', 'ConvNeXtSmall'
 ]
 
-MODELS_CLASSMATE2 = [
-    'DenseNet121', 'DenseNet169', 'DenseNet201',
-    'ConvNeXtTiny', 'ConvNeXtSmall', 'ConvNeXtBase', 'ConvNeXtLarge', 'ConvNeXtXLarge',
-    'NASNetLarge', 'MobileNetV3Small', 'MobileNetV3Large'
+MODELS_Tala = [
+    'ResNet101', 'ResNet101V2', 'InceptionV3',
+    'InceptionResNetV2', 'NASNetMobile', 'NASNetLarge', 'EfficientNetB6', 'EfficientNetB7',
+    'EfficientNetV2B1', 'EfficientNetV2B2', 'EfficientNetV2B3', 'ConvNeXtBase', 'ConvNeXtXLarge'
 ]
 
 def train_model(model_name, person_name):
