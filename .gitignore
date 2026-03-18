@@ -64,3 +64,27 @@ Thumbs.db
 *.zip
 *.tar.gz
 *.rar
+
+# Virtual environments
+venv/
+venv311/
+venv39/
+env/
+ENV/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Logs and temporary files
+*.log
+*.tmp
+*.backup
+requirements.txt.backup

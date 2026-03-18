@@ -1,9 +1,8 @@
 # Core
 tensorflow==2.10.0
 numpy==1.24.3
-protobuf==3.20.3
+protobuf>=3.9.2,<3.20
 pillow==9.5.0
-opencv-python==4.8.0
 
 # Data & ML
 pandas==2.0.3

@@ -165,13 +165,29 @@ def plot_training_history(history, model_name, save_dir='./results/figures'):
     plt.close()
 
 # Save results to JSON
-def save_results(results, filename='results.json'):
-    """Save results to JSON file"""
-    os.makedirs('./results', exist_ok=True)
-    filepath = os.path.join('./results', filename)
-    with open(filepath, 'w') as f:
-        json.dump(results, f, indent=4)
-    print(f"✓ Results saved to {filepath}")
+def save_results(results, filename):
+    """Save results dictionary to JSON file (handles numpy types)"""
+    import json
+    import numpy as np
+
+    def convert(obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return obj
+
+    # Recursively convert
+    converted = []
+    for res in results:
+        converted.append({k: convert(v) for k, v in res.items()})
+
+    with open(filename, 'w') as f:
+        json.dump(converted, f, indent=4)
+    print(f"✓ Results saved to {filename}")
 
 # Timer decorator
 class Timer:

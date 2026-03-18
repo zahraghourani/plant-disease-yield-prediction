@@ -18,6 +18,11 @@ from tensorflow.keras.callbacks import (EarlyStopping, ModelCheckpoint,
 
 import tensorflow as tf
 
+import yaml
+with open('config.yaml', 'r') as f:
+    config = yaml.safe_load(f)
+NUM_CLASSES = config['num_classes']
+
 gpus = tf.config.experimental.list_physical_devices('GPU')
 if gpus:
     for gpu in gpus:
@@ -33,7 +38,7 @@ from utils import (setup_gpu, calculate_metrics, plot_confusion_matrix,
                   plot_training_history, save_results, Timer, get_model_info)
 
 # Configuration
-DATA_DIR = r"C:\Users\zahra.elghourani\Desktop\Zahra\Plant Disease Detection and Crop Yield Prediction\data\raw"
+DATA_DIR = r"C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease"
 CHECKPOINT_DIR = "./checkpoints"
 RESULTS_DIR = "./results"
 EPOCHS = 50
@@ -74,7 +79,7 @@ def train_model(model_name, person_name):
     # Get model
     model, preprocess_func, input_size = get_model(
         model_name, 
-        num_classes=15, 
+        num_classes=NUM_CLASSES, 
         learning_rate=LEARNING_RATE
     )
     

@@ -1,10 +1,10 @@
 # Project Configuration
 project_name: "Plant Disease Detection and Crop Yield Prediction"
 dataset: "Bangladeshi Crops Disease Dataset"
-num_classes: 15
+num_classes: 14
 
 # Paths
-data_dir: "C:/Users/zahra.elghourani/Desktop/Zahra/Plant Disease Detection and Crop Yield Prediction/data/BangladeshiCropsDisease"
+data_dir: "C:/Users/HPZ4-03-Adm01/plant-disease-yield-prediction/data/Crop___DIsease"
 checkpoint_dir: "./checkpoints"
 results_dir: "./results"
 
