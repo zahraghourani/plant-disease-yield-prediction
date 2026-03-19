@@ -82,6 +82,13 @@ def train_model(model_name, person_name):
         num_classes=NUM_CLASSES, 
         learning_rate=LEARNING_RATE
     )
+
+        # Recompile with only accuracy to avoid JSON serialization issues with custom metrics
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE),
+        loss='sparse_categorical_crossentropy',
+        metrics=['accuracy']
+    )
     
     # Print model info
     model_info = get_model_info(model)
@@ -101,28 +108,28 @@ def train_model(model_name, person_name):
     )
     
     # Callbacks
-    callbacks = [
-        EarlyStopping(
-            monitor='val_loss',
-            patience=10,
-            restore_best_weights=True,
-            verbose=1
-        ),
-        ModelCheckpoint(
-            os.path.join(CHECKPOINT_DIR, f'best_{model_name}.h5'),
-            monitor='val_accuracy',
-            save_best_only=True,
-            verbose=1
-        ),
-        ReduceLROnPlateau(
-            monitor='val_loss',
-            factor=0.5,
-            patience=5,
-            min_lr=1e-7,
-            verbose=1
-        )
-    ]
-    
+    # callbacks = [
+    #     EarlyStopping(
+    #         monitor='val_loss',
+    #         patience=10,
+    #         restore_best_weights=True,
+    #         verbose=1
+    #     ),
+    #     ModelCheckpoint(
+    #         os.path.join(CHECKPOINT_DIR, f'best_{model_name}.h5'),
+    #         monitor='val_accuracy',
+    #         save_best_only=True,
+    #         verbose=1
+    #     ),
+    #     ReduceLROnPlateau(
+    #         monitor='val_loss',
+    #         factor=0.5,
+    #         patience=5,
+    #         min_lr=1e-7,
+    #         verbose=1
+    #     )
+    # ]
+    callbacks = [] 
     # Training Phase 1: Frozen base
     print(f"\n{'='*70}")
     print("Phase 1: Training with frozen base layers")

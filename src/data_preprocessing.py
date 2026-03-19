@@ -50,7 +50,7 @@ def create_data_generators(data_dir, preprocess_func=None, input_size=(224, 224)
         data_dir,
         target_size=input_size,
         batch_size=batch_size,
-        class_mode='categorical',
+        class_mode='sparse',
         subset='training',
         shuffle=True,
         seed=42
@@ -61,7 +61,7 @@ def create_data_generators(data_dir, preprocess_func=None, input_size=(224, 224)
         data_dir,
         target_size=input_size,
         batch_size=batch_size,
-        class_mode='categorical',
+        class_mode='sparse',
         subset='validation',
         shuffle=False,
         seed=42
@@ -78,7 +78,7 @@ def create_data_generators(data_dir, preprocess_func=None, input_size=(224, 224)
         classes=np.unique(train_generator.classes),
         y=train_generator.classes
     )
-    class_weight_dict = dict(enumerate(class_weights))
+    class_weight_dict = {k: float(v) for k, v in enumerate(class_weights)}
     print(f"\nClass weights: {class_weight_dict}")
     
     return train_generator, val_generator, class_names, class_weight_dict
