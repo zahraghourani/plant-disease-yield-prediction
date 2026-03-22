@@ -297,7 +297,7 @@ def get_model(model_name, num_classes=15, learning_rate=0.0001):
     # Compile model
     model.compile(
         optimizer=Adam(learning_rate=learning_rate),
-        loss='categorical_crossentropy',
+        loss='sparse_categorical_crossentropy',
         metrics=[
             'accuracy',
             tf.keras.metrics.Precision(name='precision'),

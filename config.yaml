@@ -1,7 +1,7 @@
 # Project Configuration
 project_name: "Plant Disease Detection and Crop Yield Prediction"
 dataset: "Bangladeshi Crops Disease Dataset"
-num_classes: 14
+num_classes: 15
 
 # Paths
 data_dir: "C:/Users/HPZ4-03-Adm01/plant-disease-yield-prediction/data/Crop___DIsease"
@@ -21,7 +21,7 @@ early_stopping_patience: 10
 reduce_lr_patience: 5
 
 # GPU Settings
-mixed_precision: true
+mixed_precision: false
 memory_growth: true
 
 # Model Assignments (38 models divided among 3 people)

@@ -15,12 +15,19 @@ import pandas as pd
 import tensorflow as tf
 from tensorflow.keras.callbacks import (EarlyStopping, ModelCheckpoint, 
                                        ReduceLROnPlateau, TensorBoard)
-
 import tensorflow as tf
 
 import yaml
-with open('config.yaml', 'r') as f:
-    config = yaml.safe_load(f)
+from tensorflow.keras import mixed_precision
+# Uncomment to disable mixed precision if NaN persists:
+# mixed_precision.set_global_policy('float32')
+# with open('config.yaml', 'r') as f:
+#     config = yaml.safe_load(f)
+# NUM_CLASSES = config['num_classes']
+
+# Replace lines 27-28 with:
+from utils import load_config
+config = load_config()
 NUM_CLASSES = config['num_classes']
 
 gpus = tf.config.experimental.list_physical_devices('GPU')
@@ -38,7 +45,7 @@ from utils import (setup_gpu, calculate_metrics, plot_confusion_matrix,
                   plot_training_history, save_results, Timer, get_model_info)
 
 # Configuration
-DATA_DIR = r"C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease"
+DATA_DIR = r"C:\Users\zahra.elghourani\Desktop\Zahra\Plant Disease Detection and Crop Yield Prediction\data\Crop___DIsease"
 CHECKPOINT_DIR = "./checkpoints"
 RESULTS_DIR = "./results"
 EPOCHS = 50
@@ -85,7 +92,7 @@ def train_model(model_name, person_name):
 
         # Recompile with only accuracy to avoid JSON serialization issues with custom metrics
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE, clipnorm=1.0),
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy']
     )
@@ -181,7 +188,7 @@ def train_model(model_name, person_name):
     y_true = val_gen.classes
     
     # Calculate all metrics
-    metrics = calculate_metrics(y_true, y_pred, y_pred_proba, num_classes=15)
+    metrics = calculate_metrics(y_true, y_pred, y_pred_proba, num_classes=NUM_CLASSES)
     metrics['model_name'] = model_name
     metrics['person'] = person_name
     metrics['training_time_sec'] = training_time
