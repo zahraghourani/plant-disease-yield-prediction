@@ -129,7 +129,7 @@ def train_model(model_name, person_name):
     #         verbose=1
     #     )
     # ]
-    callbacks = [] 
+    callbacks = []
     # Training Phase 1: Frozen base
     print(f"\n{'='*70}")
     print("Phase 1: Training with frozen base layers")
