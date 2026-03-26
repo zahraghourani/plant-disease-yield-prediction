@@ -33,20 +33,32 @@ def setup_logging(log_dir='./results/logs'):
     return logging.getLogger(__name__)
 
 # GPU Setup
+# In utils.py, modify setup_gpu():
 def setup_gpu():
     """Configure GPU settings"""
+    # Load config first
+    config = load_config()
+    
     gpus = tf.config.list_physical_devices('GPU')
     if gpus:
         try:
             for gpu in gpus:
-                tf.config.experimental.set_memory_growth(gpu, True)
+                # tf.config.experimental.set_memory_growth(gpu, True)
+                tf.config.experimental.set_memory_growth(gpu, False)
+                tf.config.experimental.set_virtual_device_configuration(
+                    gpu, 
+                    [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=7000)]  # 7GB limit
+                )
             print(f"✓ GPU memory growth enabled for {len(gpus)} GPU(s)")
             
-            # Enable mixed precision
-            from tensorflow.keras.mixed_precision import Policy, set_global_policy
-            policy = Policy('mixed_float16')
-            set_global_policy(policy)
-            print("✓ Mixed precision enabled")
+            # Only enable mixed precision if config says so
+            if config.get('mixed_precision', False):
+                from tensorflow.keras.mixed_precision import Policy, set_global_policy
+                policy = Policy('mixed_float16')
+                set_global_policy(policy)
+                print("✓ Mixed precision enabled")
+            else:
+                print("✓ Mixed precision disabled (using float32)")
             
             return True
         except RuntimeError as e:
