@@ -71,6 +71,14 @@ def train_model(model_name, person_name):
     print(f"Training {model_name} for {person_name}")
     print(f"{'='*70}")
     
+    print("DEBUG: Entering train_model for", model_name)   
+    convnext_fix = False
+    if 'ConvNeXt' in model_name:
+        print(f" Disabling mixed precision for {model_name}")
+        convnext_fix = True
+        original_policy = tf.keras.mixed_precision.global_policy()
+        tf.keras.mixed_precision.set_global_policy('float32')
+        print(f"Policy after change: {tf.keras.mixed_precision.global_policy().name}")
     # Create directories
     os.makedirs(CHECKPOINT_DIR, exist_ok=True)
     os.makedirs(RESULTS_DIR, exist_ok=True)
@@ -82,6 +90,12 @@ def train_model(model_name, person_name):
         num_classes=NUM_CLASSES, 
         learning_rate=LEARNING_RATE
     )
+
+        # ---- RESTORE MIXED PRECISION ----
+    if convnext_fix:
+        print(f"Restoring mixed precision policy to {original_policy.name}")
+        tf.keras.mixed_precision.set_global_policy(original_policy.name)
+    # ---------------------------------
 
         # Recompile with only accuracy to avoid JSON serialization issues with custom metrics
     model.compile(
@@ -134,6 +148,15 @@ def train_model(model_name, person_name):
     print(f"\n{'='*70}")
     print("Phase 1: Training with frozen base layers")
     print(f"{'='*70}")
+
+    # ---- FIX FOR CONVNEXT ----
+    convnext_fix = False
+    if 'ConvNeXt' in model_name:
+        print(f"⚠️  Disabling mixed precision for {model_name}")
+        convnext_fix = True
+        original_policy = tf.keras.mixed_precision.global_policy()
+        tf.keras.mixed_precision.set_global_policy('float32')
+    # ---------------------------
     
     start_time = time.time()
     
@@ -270,7 +293,22 @@ def main():
     for i, model_name in enumerate(model_list, 1):
         try:
             print(f"\n\nModel {i}/{len(model_list)}")
+                        # For ConvNeXt models, temporarily disable mixed precision
+            convnext_policy_change = False
+            if model_name.startswith('ConvNeXt'):
+                print(f"⚠️  Disabling mixed precision for {model_name}")
+                convnext_policy_change = True
+                original_policy = tf.keras.mixed_precision.global_policy()
+                tf.keras.mixed_precision.set_global_policy('float32')
+            
             result = train_model(model_name, args.person)
+            
+            # Restore original policy if changed
+            if convnext_policy_change:
+                print(f"Restoring mixed precision policy to {original_policy.name}")
+                tf.keras.mixed_precision.set_global_policy(original_policy.name)
+
+           
             all_results.append(result)
             
             # Save intermediate results
