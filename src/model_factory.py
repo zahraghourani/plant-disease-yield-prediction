@@ -296,7 +296,7 @@ def get_model(model_name, num_classes=15, learning_rate=0.0001):
 
     # Compile model
     model.compile(
-        optimizer=Adam(learning_rate=learning_rate),
+        optimizer=Adam(learning_rate=learning_rate, clipnorm=1.0),
         loss='sparse_categorical_crossentropy',
         metrics=[
             'accuracy',
@@ -309,7 +309,7 @@ def get_model(model_name, num_classes=15, learning_rate=0.0001):
     return model, preprocess_func, input_size
 
 
-def unfreeze_layers(model, num_layers_to_unfreeze=10):
+def unfreeze_layers(model, num_layers_to_unfreeze=10, learning_rate=1e-5):
     """
     Unfreeze top layers for fine-tuning
 
@@ -338,8 +338,8 @@ def unfreeze_layers(model, num_layers_to_unfreeze=10):
 
     # Recompile with lower learning rate for fine-tuning
     model.compile(
-        optimizer=Adam(learning_rate=1e-5),  # Lower LR for fine-tuning
-        loss='categorical_crossentropy',
+        optimizer=Adam(learning_rate=learning_rate, clipnorm=1.0),  # Lower LR for fine-tuning
+        loss='sparse_categorical_crossentropy',
         metrics=[
             'accuracy',
             tf.keras.metrics.Precision(name='precision'),

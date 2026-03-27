@@ -90,12 +90,12 @@ def train_model(model_name, person_name):
         learning_rate=LEARNING_RATE
     )
 
-        # Recompile with only accuracy to avoid JSON serialization issues with custom metrics
-    model.compile(
-        optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE, clipnorm=1.0),
-        loss='sparse_categorical_crossentropy',
-        metrics=['accuracy']
-    )
+    #     # Recompile with only accuracy to avoid JSON serialization issues with custom metrics
+    # model.compile(
+    #     optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE, clipnorm=1.0),
+    #     loss='sparse_categorical_crossentropy',
+    #     metrics=['accuracy']
+    # )
     
     # Print model info
     model_info = get_model_info(model)
@@ -159,7 +159,7 @@ def train_model(model_name, person_name):
         print("Phase 2: Fine-tuning top layers")
         print(f"{'='*70}")
         
-        model = unfreeze_layers(model, num_layers_to_unfreeze=10)
+        model = unfreeze_layers(model, num_layers_to_unfreeze=10, learning_rate=1e-5)
         
         history_fine = model.fit(
             train_gen,
