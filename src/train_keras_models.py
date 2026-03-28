@@ -45,7 +45,7 @@ from utils import (setup_gpu, calculate_metrics, plot_confusion_matrix,
                   plot_training_history, save_results, Timer, get_model_info)
 
 # Configuration
-DATA_DIR = r"C:\Users\zahra.elghourani\Desktop\Zahra\Plant Disease Detection and Crop Yield Prediction\data\Crop___DIsease"
+DATA_DIR = r"C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease"
 CHECKPOINT_DIR = "./checkpoints"
 RESULTS_DIR = "./results"
 EPOCHS = 50
@@ -252,6 +252,11 @@ def train_model(model_name, person_name):
     with open(f"{RESULTS_DIR}/{model_name}_summary.txt", 'w') as f:
         model.summary(print_fn=lambda x: f.write(x + '\n'))
     
+
+        # Save final model
+    final_path = os.path.join(CHECKPOINT_DIR, f'final_{model_name}.h5')
+    model.save(final_path)
+    print(f"Final model saved to {final_path}")
     # Clear memory
     del model
     tf.keras.backend.clear_session()

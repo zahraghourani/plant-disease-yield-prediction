@@ -1,0 +1,2 @@
+model_name,accuracy,precision_macro,recall_macro,f1_macro,roc_auc_ovr,mcc,training_time_sec,inference_time_ms,model_size_mb,total_params
+ConvNeXtSmall,0.7922,0.8313,0.8347,0.8203,0.9801,0.7792,2775.0462,242.3771,190.683,49986414
