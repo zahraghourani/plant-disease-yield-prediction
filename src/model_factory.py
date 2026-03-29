@@ -271,11 +271,14 @@ def get_model(model_name, num_classes=15, learning_rate=0.0001):
     model_class = globals()[model_name]
 
     # Create base model with ImageNet weights
+        
     base_model = model_class(
         weights='imagenet',
         include_top=False,
-        input_shape=(*input_size, 3)
+        input_shape=(*input_size, 3),
+            
     )
+    
 
     # Freeze base layers for transfer learning
     base_model.trainable = False
@@ -341,10 +344,10 @@ def unfreeze_layers(model, num_layers_to_unfreeze=10, learning_rate=1e-5):
         optimizer=Adam(learning_rate=learning_rate, clipnorm=1.0),  # Lower LR for fine-tuning
         loss='sparse_categorical_crossentropy',
         metrics=[
-            'accuracy',
-            tf.keras.metrics.Precision(name='precision'),
-            tf.keras.metrics.Recall(name='recall'),
-            tf.keras.metrics.AUC(name='auc')
+            'accuracy'
+            # tf.keras.metrics.Precision(name='precision'),
+            # tf.keras.metrics.Recall(name='recall'),
+            # tf.keras.metrics.AUC(name='auc')
         ]
     )
 
