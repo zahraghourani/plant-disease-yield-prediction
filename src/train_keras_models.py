@@ -182,7 +182,7 @@ def train_model(model_name, person_name):
         print("Phase 2: Fine-tuning top layers")
         print(f"{'='*70}")
         
-        model = unfreeze_layers(model, num_layers_to_unfreeze=10)
+        model = unfreeze_layers(model, num_layers_to_unfreeze=10, learning_rate=1e-5)
         
         history_fine = model.fit(
             train_gen,
