@@ -183,7 +183,10 @@ def save_results(results, filename):
     import numpy as np
 
     def convert(obj):
-        if isinstance(obj, np.integer):
+        import tensorflow as tf
+        if isinstance(obj, tf.Tensor):
+            return obj.numpy().tolist()
+        elif isinstance(obj, np.integer):
             return int(obj)
         elif isinstance(obj, np.floating):
             return float(obj)

@@ -13,9 +13,8 @@ warnings.filterwarnings('ignore')
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from tensorflow.keras.callbacks import (EarlyStopping, ModelCheckpoint, 
+from tensorflow.keras.callbacks import (EarlyStopping, ModelCheckpoint,
                                        ReduceLROnPlateau, TensorBoard)
-import tensorflow as tf
 
 import yaml
 from tensorflow.keras import mixed_precision
@@ -45,7 +44,7 @@ from utils import (setup_gpu, calculate_metrics, plot_confusion_matrix,
                   plot_training_history, save_results, Timer, get_model_info)
 
 # Configuration
-DATA_DIR = r"C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease"
+DATA_DIR = r"C:\Users\zahra.elghourani\Desktop\Zahra\Plant Disease Detection and Crop Yield Prediction\data\Crop___DIsease"
 CHECKPOINT_DIR = "./checkpoints"
 RESULTS_DIR = "./results"
 EPOCHS = 50
@@ -156,15 +155,6 @@ def train_model(model_name, person_name):
     print("Phase 1: Training with frozen base layers")
     print(f"{'='*70}")
 
-    # ---- FIX FOR CONVNEXT ----
-    convnext_fix = False
-    if 'ConvNeXt' in model_name:
-        print(f"⚠️  Disabling mixed precision for {model_name}")
-        convnext_fix = True
-        original_policy = tf.keras.mixed_precision.global_policy()
-        tf.keras.mixed_precision.set_global_policy('float32')
-    # ---------------------------
-    
     start_time = time.time()
     
     history = model.fit(
@@ -253,10 +243,19 @@ def train_model(model_name, person_name):
         model.summary(print_fn=lambda x: f.write(x + '\n'))
     
 
-        # Save final model
-    final_path = os.path.join(CHECKPOINT_DIR, f'final_{model_name}.h5')
-    model.save(final_path)
-    print(f"Final model saved to {final_path}")
+    # # Save final model
+    # final_path = os.path.join(CHECKPOINT_DIR, f'final_{model_name}.h5')
+    # model.save(final_path, include_optimizer=False)
+    # print(f"Final model saved to {final_path}")
+    # # Clear memory
+    # del model
+    # tf.keras.backend.clear_session()
+    
+    # return metrics
+    # Save final model
+    weights_path = os.path.join(CHECKPOINT_DIR, f'final_{model_name}_weights.h5')
+    model.save_weights(weights_path)
+    print(f"✓ Model weights saved to {weights_path}")
     # Clear memory
     del model
     tf.keras.backend.clear_session()
