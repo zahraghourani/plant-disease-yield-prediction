@@ -67,7 +67,9 @@ MODELS_SIREEN = [
 ]
 
 MODELS_TALA = [
-    'ResNet101', 'ResNet101V2', 'InceptionV3',
+    'ResNet101', 
+    'ResNet101V2',
+     'InceptionV3',
     'InceptionResNetV2', 'NASNetMobile', 'NASNetLarge', 'EfficientNetB6', 'EfficientNetB7',
     'EfficientNetV2B1', 'EfficientNetV2B2', 'EfficientNetV2B3', 'ConvNeXtBase', 'ConvNeXtXLarge'
 ]
@@ -177,7 +179,7 @@ def train_model(model_name, person_name):
     )
     
     # Training Phase 2: Fine-tuning (optional, for larger models)
-    if model_name not in ['MobileNet', 'MobileNetV2', 'NASNetMobile']:
+    if model_name not in ['MobileNet', 'MobileNetV2', 'NASNetMobile'] and model_name != 'ConvNeXtXLarge' and model_name != 'ConvNeXtLarge':
         print(f"\n{'='*70}")
         print("Phase 2: Fine-tuning top layers")
         print(f"{'='*70}")
@@ -255,6 +257,7 @@ def train_model(model_name, person_name):
 
         # Save final model
     final_path = os.path.join(CHECKPOINT_DIR, f'final_{model_name}.h5')
+    model.compile(optimizer=model.optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     model.save(final_path)
     print(f"Final model saved to {final_path}")
     # Clear memory
