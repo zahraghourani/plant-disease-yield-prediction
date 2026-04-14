@@ -66,7 +66,9 @@ MODELS_SIREEN = [
 ]
 
 MODELS_TALA = [
-    'ResNet101', 'ResNet101V2', 'InceptionV3',
+    'ResNet101', 
+    'ResNet101V2',
+     'InceptionV3',
     'InceptionResNetV2', 'NASNetMobile', 'NASNetLarge', 'EfficientNetB6', 'EfficientNetB7',
     'EfficientNetV2B1', 'EfficientNetV2B2', 'EfficientNetV2B3', 'ConvNeXtBase', 'ConvNeXtXLarge'
 ]
@@ -167,7 +169,7 @@ def train_model(model_name, person_name):
     )
     
     # Training Phase 2: Fine-tuning (optional, for larger models)
-    if model_name not in ['MobileNet', 'MobileNetV2', 'NASNetMobile']:
+    if model_name not in ['MobileNet', 'MobileNetV2', 'NASNetMobile'] and model_name != 'ConvNeXtXLarge' and model_name != 'ConvNeXtLarge':
         print(f"\n{'='*70}")
         print("Phase 2: Fine-tuning top layers")
         print(f"{'='*70}")
@@ -243,19 +245,10 @@ def train_model(model_name, person_name):
         model.summary(print_fn=lambda x: f.write(x + '\n'))
     
 
-    # # Save final model
-    # final_path = os.path.join(CHECKPOINT_DIR, f'final_{model_name}.h5')
-    # model.save(final_path, include_optimizer=False)
-    # print(f"Final model saved to {final_path}")
-    # # Clear memory
-    # del model
-    # tf.keras.backend.clear_session()
-    
-    # return metrics
-    # Save final model
-    weights_path = os.path.join(CHECKPOINT_DIR, f'final_{model_name}_weights.h5')
-    model.save_weights(weights_path)
-    print(f"✓ Model weights saved to {weights_path}")
+        # Save final model
+    final_path = os.path.join(CHECKPOINT_DIR, f'final_{model_name}.h5')
+    model.save(final_path)
+    print(f"Final model saved to {final_path}")
     # Clear memory
     del model
     tf.keras.backend.clear_session()

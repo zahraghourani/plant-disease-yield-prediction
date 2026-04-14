@@ -10,7 +10,7 @@ results_dir: "./results"
 
 # Image Settings
 image_size: [224, 224]
-batch_size: 16  # Reduced for RTX 2080 8GB
+batch_size: 2  # Reduced for RTX 2080 8GB
 validation_split: 0.15
 test_split: 0.15
 

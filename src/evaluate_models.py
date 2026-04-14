@@ -143,7 +143,7 @@ if __name__ == "__main__":
     result_files = glob.glob("./results/*_final_results.csv")
     
     if not result_files:
-        print("No results files found!")
+        print("No results files found here!")
         sys.exit(1)
     
     for results_file in result_files:
