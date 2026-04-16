@@ -30,7 +30,7 @@ SIREEN_MODELS = [
     'ConvNeXtTiny', 'ConvNeXtSmall'
 ]
 
-TALA_MODELS = [
+TALA_MODELS = [R
     'ResNet101', 'ResNet101V2', 'InceptionV3', 'InceptionResNetV2',
     'NASNetMobile', 'NASNetLarge', 'EfficientNetB6', 'EfficientNetB7',
     'EfficientNetV2B1', 'EfficientNetV2B2', 'EfficientNetV2B3',
