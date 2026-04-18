@@ -246,11 +246,15 @@ def train_model(model_name, person_name):
     
 
         # Save final model
-    final_path = os.path.join(CHECKPOINT_DIR, f'final_{model_name}.h5')
-    model.compile(optimizer=model.optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    model.optimizer = None
-    model.save(final_path)
-    print(f"Final model saved to {final_path}")
+    # final_path = os.path.join(CHECKPOINT_DIR, f'final_{model_name}.h5')
+    # model.compile(optimizer=model.optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    # model.optimizer = None
+    # model.save(final_path)
+    # Save final model
+    # Save final model - weights only to avoid EagerTensor serialization bug
+    final_path = os.path.join(CHECKPOINT_DIR, f'final_{model_name}.weights.h5')
+    model.save_weights(final_path)
+    print(f"Final model weights saved to {final_path}")
     # Clear memory
     del model
     tf.keras.backend.clear_session()
