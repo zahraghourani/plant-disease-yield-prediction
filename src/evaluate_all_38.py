@@ -25,7 +25,7 @@ DATA_DIR    = r'C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop_
 CHECKPOINT_DIR = './checkpoints'
 OUTPUT_CSV  = 'ALL_38_MODELS_COMBINED.csv'
 BATCH_SIZE  = 16
-NUM_CLASSES = 14
+NUM_CLASSES = 15
 
 # ── Find all final_ checkpoints ─────────────────────────────────────
 # Prefer final_ over best_ (final = after fine-tuning)

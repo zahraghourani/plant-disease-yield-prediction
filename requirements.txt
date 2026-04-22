@@ -27,3 +27,4 @@ pyyaml==6.0.1
 
 # Object Detection (Faster R-CNN)
 # tensorflow-object-detection-api  # Install separately if needed
+pip install pillow lxml Cython contextlib2 opencv-python

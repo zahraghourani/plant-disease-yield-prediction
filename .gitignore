@@ -88,3 +88,10 @@ Thumbs.db
 *.tmp
 *.backup
 requirements.txt.backup
+
+# weights folder
+weights/
+
+tensorflow/
+dino_env/
+detection_data/
