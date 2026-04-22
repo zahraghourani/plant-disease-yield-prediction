@@ -39,7 +39,7 @@ def evaluate(model, data_loader, device, coco_gt):
 
 if __name__ == "__main__":
     device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
-    data_dir = 'detection_data/images'
+    data_dir = 'data/Crop___Disease'
     ann_file = 'detection_data/annotations/train_coco.json'
     dataset = CocoDetection(data_dir, ann_file, transforms=get_transform())
     coco_gt = dataset.coco  # directly from the dataset
