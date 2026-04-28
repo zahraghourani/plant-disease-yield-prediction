@@ -1,126 +1,83 @@
-# plant-disease-yield-prediction
-## STEP 1: Install Python (The Right Way)
-Don't use Microsoft Store Python. Use Miniconda (recommended for data science):
-### Download Miniconda:
-Go to: https://docs.conda.io/en/latest/miniconda.html
-Download: Miniconda3 Windows 64-bit
-Install with "Add to PATH" checked
-### Verify installation:
-Open Anaconda Prompt
-Type: conda --version
-Should show something like: conda 23.x.x
-## STEP 2: Create Your Project Environment
-Open Anaconda Prompt and run these commands ONE BY ONE:
-```
-# Create environment with Python 3.9 (stable for TensorFlow)
-conda create -n plant_disease python=3.9 -y
+# Plant Disease Detection & Crop Yield Prediction
 
-# Activate the environment
-conda activate plant_disease
+An integrated deep learning framework for plant disease detection and crop yield prediction using Faster RCNN, 38 CNN models, and XGBoost.
 
-# Install CUDA toolkit and cuDNN (this handles ALL compatibility issues!)
+## Setup
+
+```bash
+conda create -n tf-gpu python=3.9 -y
+conda activate tf-gpu
 conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1 -y
-
-# Set environment variables (CRITICAL for Windows)
-conda env config vars set LD_LIBRARY_PATH=%CONDA_PREFIX%\Library\bin
-
-# Reactivate to load variables
-conda deactivate
-conda activate plant_disease
-
-# Install TensorFlow (version compatible with CUDA 11.2)
 pip install tensorflow==2.10
-
-# Install other required packages
-pip install pandas numpy matplotlib seaborn scikit-learn jupyter notebook opencv-python pillow
+pip install pandas numpy matplotlib seaborn scikit-learn xgboost jupyter notebook opencv-python pillow ipywidgets torch torchvision groundingdino-py
 ```
-## STEP 3: Setup
-### Open Anaconda Prompt (in your project folder):
+
+## Dataset
+
+Download from Kaggle and place in `data/`:
+- Disease images: https://www.kaggle.com/datasets/nafishamoin/bangladeshi-crops-disease-dataset
+- Yield data: https://www.kaggle.com/datasets/patelris/crop-yield-prediction-dataset → place in `data/yield_data/`
+
+## Run
+
+**Train Keras models:**
+```bash
+conda activate tf-gpu
+python src/train_keras_models.py --person zahra  # or sireen / tala
 ```
-# Verify GPU is working
-python -c "import tensorflow as tf; print('GPU Available:', tf.config.list_physical_devices('GPU'))"
 
-# Install git if not present
-conda install git -y
-
-# Configure git (use your actual name and email)
-git config --global user.name "your_username"
-git config --global user.email "your.email@example.com"
-
-# Clone your repository (replace with your actual URL)
-cd C:\Users\user\Desktop\folder_name
-git clone https://github.com/zahraghourani/plant-disease-yield-prediction.git
-
-# Go into the folder
-cd plant-disease-yield-prediction
-
-# Create folder structure
-mkdir data
-mkdir models
-mkdir notebooks
-mkdir src
-mkdir results
-mkdir checkpoints
-
-# Create .gitignore file (prevents uploading large files)
-echo "data/
-checkpoints/
-*.h5
-*.pkl
-__pycache__/
-.ipynb_checkpoints/" > .gitignore
-
-# Add everything to git
-git add .
-git commit -m "Initial project structure"
-
-# Push to GitHub
-git push origin main
+**Evaluate all 38 models:**
+```bash
+python src/evaluate_all_38.py
 ```
-### Expected Output:
-`GPU Available: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU')]`
 
-## STEP 4: Download the Dataset
-### Option 1: Manual Download
-#### Go to: https://www.kaggle.com/datasets/nafishamoin/bangladeshi-crops-disease-dataset
-### Option 2: Kaggle API (For automation)
+**Auto-annotate with Grounding DINO:**
+```bash
+# Download weights to weights/ folder first:
+# https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth
+# https://raw.githubusercontent.com/IDEA-Research/GroundingDINO/main/groundingdino/config/GroundingDINO_SwinT_OGC.py
+python src/auto_annotate.py
 ```
-# Install Kaggle API
-pip install kaggle
 
-# Get API key from Kaggle (Profile → Account → Create New API Token)
-# Place kaggle.json in C:\Users\zahra.elghourani\.kaggle\
+**Convert annotations to COCO format:**
+```bash
+python src/convert_to_coco.py
+```
 
-# Download dataset
-kaggle datasets download -d nafishamoin/bangladeshi-crops-disease-dataset
-unzip bangladeshi-crops-disease-dataset.zip -d data/
+**Train Faster RCNN:**
+```bash
+python src/train_faster_rcnn_torchvision.py
 ```
-## STEP 5: How to run the Keras Models(for each person)
+
+**Evaluate Faster RCNN:**
+```bash
+python src/evaluate_faster_rcnn.py
 ```
-conda activate plant_disease
-cd "C:\path\to\project"
-python src/train_keras_models.py --person _person_name_ (zahra/sireen/tala)
+
+**Yield prediction + interface:**
+```bash
+jupyter notebook notebooks/04_yield_prediction.ipynb
 ```
-## STEP 6: Git Workflow
-### Daily Workflow:
-```
-# 1. Get latest changes from teammates
+
+## Results
+
+| Model | Accuracy | F1-Macro |
+|-------|----------|----------|
+| ConvNeXtXLarge | 84.2% | 0.865 |
+| EfficientNetV2S | 83.3% | 0.852 |
+| EfficientNetB4 | 82.9% | 0.844 |
+
+| Detector | Annotations | mAP@0.5 |
+|----------|-------------|---------|
+| Manual | 280 | 35% |
+| Grounding DINO | 2,256 | 84.2% |
+
+## Git Workflow
+
+```bash
 git pull origin main
-
-# 2. Do your work (train models, update code)
-
-# 3. Save your changes
+# do your work
 git add .
-git commit -m "Trained ResNet50, achieved 94% accuracy"
-
-# 4. Upload to GitHub
-git push origin main
-```
-### If there is a conflict:
-```
-git pull origin main --rebase
-# Fix any conflicts in files
-git add .
-git rebase --continue
+git commit -m "your message"
 git push origin main
 ```
