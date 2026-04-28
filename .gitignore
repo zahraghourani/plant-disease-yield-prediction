@@ -95,3 +95,5 @@ weights/
 tensorflow/
 dino_env/
 detection_data/
+
+models/
