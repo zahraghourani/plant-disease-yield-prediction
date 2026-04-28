@@ -97,3 +97,6 @@ dino_env/
 detection_data/
 
 models/
+*.h5
+*.weights.h5
+checkpoints/
