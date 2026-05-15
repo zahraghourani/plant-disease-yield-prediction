@@ -243,7 +243,7 @@ MODEL_CONFIG = {
 }
 
 
-def get_model(model_name, num_classes=15, learning_rate=0.0001):
+def get_model(model_name, num_classes=15, learning_rate=0.0001, base_weights='imagenet'):
     """
     Create a model with transfer learning
 
@@ -251,6 +251,8 @@ def get_model(model_name, num_classes=15, learning_rate=0.0001):
         model_name: Name of the model (must be in MODEL_CONFIG)
         num_classes: Number of output classes (default: 15 for Bangladeshi Crops Disease)
         learning_rate: Learning rate for optimizer (default: 0.0001)
+        base_weights: Base-model weights to load. Use 'imagenet' for training
+            and None when rebuilding a model only to load local checkpoint weights.
 
     Returns:
         model: Compiled Keras model
@@ -273,7 +275,7 @@ def get_model(model_name, num_classes=15, learning_rate=0.0001):
     # Create base model with ImageNet weights
         
     base_model = model_class(
-        weights='imagenet',
+        weights=base_weights,
         include_top=False,
         input_shape=(*input_size, 3),
             
