@@ -1,0 +1,5 @@
+experiment,features,n_train,n_test,r2,rmse
+Climate only,"average_rain_fall_mm_per_year, pesticides_tonnes, avg_temp",12513,3129,-0.11506217418191222,95171.63593927745
+Climate + crop type,"average_rain_fall_mm_per_year, pesticides_tonnes, avg_temp, crop_encoded",12513,3129,0.9698749490381474,15643.066370035944
+Climate + disease severity,"average_rain_fall_mm_per_year, pesticides_tonnes, avg_temp, disease_severity",12513,3129,0.9606305579427858,17882.886608813536
+Full model,"average_rain_fall_mm_per_year, pesticides_tonnes, avg_temp, crop_encoded, disease_severity",12513,3129,0.9742832533024559,14453.266360172553

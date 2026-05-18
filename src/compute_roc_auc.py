@@ -23,33 +23,29 @@ DATA_DIR   = ROOT / "data" / "Crop___Disease"
 CKPT_DIR   = ROOT / "checkpoints"
 OUTPUT_CSV = ROOT / "results" / "roc_auc_results.csv"
 
+# Models were trained with 15 output classes (14 disease/healthy + 1 Invalid)
 NUM_CLASSES = 15
-IMG_SIZE    = (224, 224)   # overridden per model below
 BATCH_SIZE  = 32
 SEED        = 42
 
+
 # ── Load test images ──────────────────────────────────────────────────────────
 def load_test_dataset(class_names, input_size):
-    """Returns (X_test, y_test) as numpy arrays."""
+    """Returns (X_test, y_test) as numpy arrays using same split as training."""
     all_paths, all_labels = [], []
     for idx, cls in enumerate(class_names):
         folder = DATA_DIR / cls
         if not folder.exists():
             continue
-        for img_path in folder.glob("*.jpg"):
-            all_paths.append(str(img_path))
-            all_labels.append(idx)
-        for img_path in folder.glob("*.JPG"):
-            all_paths.append(str(img_path))
-            all_labels.append(idx)
-        for img_path in folder.glob("*.png"):
-            all_paths.append(str(img_path))
-            all_labels.append(idx)
+        for ext in ["*.jpg", "*.JPG", "*.jpeg", "*.JPEG", "*.png", "*.PNG"]:
+            for img_path in folder.glob(ext):
+                all_paths.append(str(img_path))
+                all_labels.append(idx)
 
-    # Use same 85/15 split as training — fix seed so test set is identical
+    # Same 85/15 split + same seed as training → identical test set
     _, test_paths, _, test_labels = train_test_split(
-        all_paths, all_labels, test_size=0.15, random_state=SEED,
-        stratify=all_labels
+        all_paths, all_labels,
+        test_size=0.15, random_state=SEED, stratify=all_labels
     )
 
     images = []
@@ -72,63 +68,82 @@ def main():
     print(f"\nFound {len(checkpoints)} checkpoints\n")
 
     for ckpt in checkpoints:
-        # Extract model name from filename e.g. final_ConvNeXtXLarge.weights.h5
-        model_name = ckpt.stem.replace("final_", "")
+        model_name = ckpt.name.replace("final_", "").replace(".weights.h5", "")
         print(f"[{model_name}] Loading...")
 
+        # ── Load model with 15 classes (matches training) ──────────────────
         try:
             model, preprocess_fn, input_size = get_model(
                 model_name,
                 num_classes=NUM_CLASSES,
-                base_weights=None,   # don't load ImageNet weights
+                base_weights=None,
             )
             model.load_weights(str(ckpt))
         except Exception as e:
             print(f"  ERROR loading {model_name}: {e}")
             continue
 
-        # Load test data at correct resolution
+        # ── Load test images ────────────────────────────────────────────────
         print(f"  Loading test images at {input_size}...")
         X_test, y_test = load_test_dataset(class_names, list(input_size))
 
-        # Apply preprocessing
         if preprocess_fn is not None:
             X_test = preprocess_fn(X_test)
 
-        # Predict probabilities
+        # ── Predict ─────────────────────────────────────────────────────────
         print(f"  Predicting on {len(X_test)} test images...")
         t0 = time.time()
         y_prob = model.predict(X_test, batch_size=BATCH_SIZE, verbose=0)
         elapsed = time.time() - t0
 
-        # Compute ROC-AUC
+        # y_prob has shape (n, 15) — model output classes
+        # y_test has values 0..13 (14 folders) — binarize against 15 cols
         y_bin = label_binarize(y_test, classes=list(range(NUM_CLASSES)))
+
+        # If test set is missing the 15th class (Invalid), pad with zeros
+        if y_bin.shape[1] < NUM_CLASSES:
+            pad = np.zeros((y_bin.shape[0], NUM_CLASSES - y_bin.shape[1]))
+            y_bin = np.hstack([y_bin, pad])
+
+        # ── ROC-AUC ─────────────────────────────────────────────────────────
+        # Compute ROC-AUC — only on classes present in test set
+        unique_classes = sorted(np.unique(y_test).tolist())
+        y_bin  = label_binarize(y_test, classes=list(range(NUM_CLASSES)))
+        y_bin_f   = y_bin[:, unique_classes]
+        y_prob_f  = y_prob[:, unique_classes]
+
         try:
-            auc_ovr = roc_auc_score(y_bin, y_prob, multi_class="ovr", average="macro")
-            auc_ovo = roc_auc_score(y_bin, y_prob, multi_class="ovo", average="macro")
+            auc_ovr = roc_auc_score(y_bin_f, y_prob_f, average="macro")
+            auc_ovo = roc_auc_score(y_bin_f, y_prob_f, average="macro")
+            print(f"  ROC-AUC OVR={auc_ovr:.4f}  OVO={auc_ovo:.4f}  ({elapsed:.1f}s)")
+            results.append({
+                "model_name":  model_name,
+                "roc_auc_ovr": round(auc_ovr, 6),
+                "roc_auc_ovo": round(auc_ovo, 6),
+            })
         except Exception as e:
-            print(f"  ROC-AUC error: {e}")
-            auc_ovr, auc_ovo = None, None
+            print(f"  ROC-AUC error: {e}  ({elapsed:.1f}s)")
+            results.append({
+                "model_name":  model_name,
+                "roc_auc_ovr": "",
+                "roc_auc_ovo": "",
+            })
 
-        print(f"  ROC-AUC OVR={auc_ovr:.4f}  OVO={auc_ovo:.4f}  ({elapsed:.1f}s)")
-        results.append({
-            "model_name": model_name,
-            "roc_auc_ovr": round(auc_ovr, 6) if auc_ovr else "",
-            "roc_auc_ovo": round(auc_ovo, 6) if auc_ovo else "",
-        })
+        # Save after every model so progress is not lost if it crashes
+        OUTPUT_CSV.parent.mkdir(exist_ok=True)
+        with open(OUTPUT_CSV, "w", newline="") as f:
+            writer = csv.DictWriter(
+                f, fieldnames=["model_name", "roc_auc_ovr", "roc_auc_ovo"]
+            )
+            writer.writeheader()
+            writer.writerows(results)
 
-        # Free GPU memory between models
         tf.keras.backend.clear_session()
 
-    # Save
-    OUTPUT_CSV.parent.mkdir(exist_ok=True)
-    with open(OUTPUT_CSV, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["model_name","roc_auc_ovr","roc_auc_ovo"])
-        writer.writeheader()
-        writer.writerows(results)
-
+    # ── Final summary ────────────────────────────────────────────────────────
     print(f"\nDone. Saved to {OUTPUT_CSV}")
-    print(pd.DataFrame(results).to_string(index=False))
+    df = pd.DataFrame(results)
+    print(df.to_string(index=False))
 
 
 if __name__ == "__main__":

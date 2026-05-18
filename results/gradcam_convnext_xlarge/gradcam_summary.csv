@@ -1,0 +1,7 @@
+image,true_class,predicted_class,confidence,is_correct,gradcam_file
+C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease\Corn___Common_Rust\RS_Rust 2742_flipLR.JPG,Corn___Common_Rust,Corn___Common_Rust,1.000000,True,01_correct_Corn___Common_Rust_pred_Corn___Common_Rust.png
+C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease\Corn___Healthy\f3944213-7339-4b29-a00a-c235b4c5a2c1___R.S_HL 5533 copy.jpg,Corn___Healthy,Corn___Healthy,1.000000,True,02_correct_Corn___Healthy_pred_Corn___Healthy.png
+C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease\Corn___Leaf_Blight\f683a321-4962-4bba-ad92-002edcbc1be6___RS_NLB 4160_flipTB.JPG,Corn___Leaf_Blight,Corn___Leaf_Blight,1.000000,True,03_correct_Corn___Leaf_Blight_pred_Corn___Leaf_Blight.png
+C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease\Rice___Healthy\IMG_20190419_172123.jpg,Rice___Healthy,Rice___Hispa,0.929791,False,04_incorrect_Rice___Healthy_pred_Rice___Hispa.png
+C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease\Rice___Healthy\IMG_20190419_172413.jpg,Rice___Healthy,Rice___Hispa,0.837970,False,05_incorrect_Rice___Healthy_pred_Rice___Hispa.png
+C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease\Rice___Healthy\IMG_20190419_172429.jpg,Rice___Healthy,Rice___Hispa,0.781021,False,06_incorrect_Rice___Healthy_pred_Rice___Hispa.png

@@ -1,0 +1,5 @@
+crop,crop_encoded,disease_severity
+Maize,0,0.25
+Potatoes,1,0.21666666666666667
+"Rice, paddy",2,0.2625
+Wheat,3,0.25

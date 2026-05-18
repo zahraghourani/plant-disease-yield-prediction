@@ -1,0 +1,4 @@
+image,true_class,predicted_class,confidence,brightness,contrast,example_file
+C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease\Rice___Healthy\IMG_20190419_174302.jpg,Rice___Healthy,Rice___Hispa,0.999920,200.22,53.70,failure_example_1.png
+C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease\Rice___Brown_Spot\IMG_20190420_195218.jpg,Rice___Brown_Spot,Rice___Leaf_Blast,0.974480,205.68,46.37,failure_example_2.png
+C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease\Rice___Leaf_Blast\IMG_20190419_175420.jpg,Rice___Leaf_Blast,Rice___Hispa,0.999943,211.02,49.68,failure_example_3.png

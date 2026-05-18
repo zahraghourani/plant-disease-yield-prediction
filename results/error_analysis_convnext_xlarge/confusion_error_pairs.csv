@@ -1,0 +1,11 @@
+true_class,predicted_class,count
+Rice___Healthy,Rice___Hispa,61
+Rice___Brown_Spot,Rice___Leaf_Blast,10
+Rice___Leaf_Blast,Rice___Hispa,10
+Rice___Hispa,Rice___Healthy,4
+Rice___Healthy,Rice___Brown_Spot,4
+Wheat___Brown_Rust,Wheat___Yellow_Rust,2
+Rice___Brown_Spot,Rice___Hispa,2
+Wheat___Brown_Rust,Corn___Healthy,1
+Wheat___Brown_Rust,Wheat___Healthy,1
+Rice___Brown_Spot,Rice___Healthy,1

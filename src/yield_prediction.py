@@ -16,6 +16,13 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs
 
+import torch
+import torchvision
+from torchvision.models.detection import fasterrcnn_resnet50_fpn
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+from torchvision import transforms as T
+import cv2
+
 import numpy as np
 import pandas as pd
 from PIL import Image
@@ -105,6 +112,84 @@ class YieldResult:
     confidence: float | None = None
     image_preview: str | None = None
 
+class DiseaseLocaliser:
+    """Loads Faster RCNN and draws bounding boxes on a PIL image."""
+
+    RCNN_CHECKPOINT = ROOT / "checkpoints" / "faster_rcnn_model.pth"
+    NUM_CLASSES = 15  # 14 disease classes + background
+
+    def __init__(self):
+        self.device = torch.device("cpu")
+        self.model = None
+
+    def _load(self):
+        if self.model is not None:
+            return
+        model = fasterrcnn_resnet50_fpn(pretrained=False)
+        in_features = model.roi_heads.box_predictor.cls_score.in_features
+        model.roi_heads.box_predictor = FastRCNNPredictor(
+            in_features, self.NUM_CLASSES
+        )
+        model.load_state_dict(
+            torch.load(str(self.RCNN_CHECKPOINT), map_location=self.device)
+        )
+        model.eval()
+        self.model = model
+
+    def annotate(self, image_bytes: bytes, threshold: float = 0.5) -> bytes:
+        """
+        Returns image bytes with bounding boxes drawn on detected disease regions.
+        Falls back to the original image if no boxes are found or model not available.
+        """
+        if not self.RCNN_CHECKPOINT.exists():
+            return image_bytes  # graceful fallback
+
+        try:
+            self._load()
+        except Exception:
+            return image_bytes
+
+        # Decode image
+        img_array = np.frombuffer(image_bytes, np.uint8)
+        img_bgr = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+        img_rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB)
+
+        # Run Faster RCNN
+        transform = T.Compose([T.ToTensor()])
+        tensor = transform(img_rgb).unsqueeze(0).to(self.device)
+
+        with torch.no_grad():
+            outputs = self.model(tensor)[0]
+
+        boxes  = outputs["boxes"].cpu().numpy()
+        scores = outputs["scores"].cpu().numpy()
+
+        # Draw boxes above threshold
+        annotated = img_bgr.copy()
+        h, w = annotated.shape[:2]
+        found = False
+        for box, score in zip(boxes, scores):
+            if score < threshold:
+                continue
+            found = True
+            x1, y1, x2, y2 = map(int, box)
+            # Red rectangle
+            cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 0, 220), 3)
+            # Score label
+            label = f"{score:.0%}"
+            cv2.rectangle(annotated, (x1, y1 - 22), (x1 + 56, y1), (0, 0, 220), -1)
+            cv2.putText(annotated, label, (x1 + 3, y1 - 5),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
+
+        if not found:
+            # No detections — draw a dashed border to indicate model ran
+            cv2.rectangle(annotated, (4, 4), (w - 4, h - 4), (100, 100, 100), 2)
+
+        _, buf = cv2.imencode(".jpg", annotated, [cv2.IMWRITE_JPEG_QUALITY, 90])
+        return buf.tobytes()
+
+
+LOCALISER = DiseaseLocaliser()
 
 class YieldPredictor:
     def __init__(self) -> None:
@@ -230,6 +315,8 @@ class YieldPredictor:
         crop = DISEASE_TO_CROP.get(disease, "Maize")
         confidence = float(preds[class_idx] * 100)
         preview = base64.b64encode(image_bytes).decode("ascii")
+        annotated_bytes = LOCALISER.annotate(image_bytes, threshold=0.4)
+        preview = base64.b64encode(annotated_bytes).decode("ascii")
 
         return self.predict_yield(
             crop=crop,
