@@ -1,0 +1,15 @@
+disease_class,n_images,literature_severity,computed_mean,computed_std,avg_lesion_ratio,avg_confidence
+Corn___Common_Rust,15,0.35,0.1387,0.2715,0.1395,0.9938
+Corn___Healthy,15,0.0,0.2753,0.4175,0.2775,0.9919
+Corn___Leaf_Blight,15,0.4,0.0341,0.0714,0.0344,0.9932
+Invalid,15,0.0,0.6472,0.6814,0.6511,0.9941
+Potato___Early_Blight,15,0.2,0.5313,0.4311,0.5352,0.9927
+Potato___Healthy,15,0.0,0.1175,0.3104,0.1184,0.9932
+Potato___Late_Blight,15,0.45,0.5492,0.4102,0.5528,0.9934
+Rice___Brown_Spot,15,0.25,0.2378,0.3059,0.2395,0.9922
+Rice___Healthy,15,0.0,0.0406,0.1574,0.041,0.9909
+Rice___Hispa,15,0.3,0.0,0.0,0.0,0.9883
+Rice___Leaf_Blast,15,0.5,0.0698,0.2376,0.0703,0.9912
+Wheat___Brown_Rust,15,0.35,0.2428,0.3826,0.2443,0.9937
+Wheat___Healthy,15,0.0,0.3044,0.4476,0.3063,0.9934
+Wheat___Yellow_Rust,15,0.4,0.4627,0.5951,0.466,0.9926

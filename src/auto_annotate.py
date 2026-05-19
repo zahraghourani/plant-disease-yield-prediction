@@ -1,3 +1,14 @@
+import sys
+import os
+
+# Add GroundingDINO to Python path
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+grounding_dino_path = os.path.join(project_root, 'GroundingDINO')
+sys.path.insert(0, grounding_dino_path)
+
+# Now these imports will work
+from groundingdino.util.inference import load_model, load_image, predict
+
 import os
 import torch
 from groundingdino.util.inference import load_model, load_image, predict

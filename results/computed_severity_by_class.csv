@@ -1,0 +1,2 @@
+class,computed_mean,computed_std,computed_min,computed_max,n_samples,literature,avg_area_ratio,avg_n_lesions,difference
+Crop___Disease,1.0,0.0,1.0,1.0,50,0.0,1.0,2.04,1.0
