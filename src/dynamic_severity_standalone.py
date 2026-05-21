@@ -98,8 +98,14 @@ def compute_dynamic_severity(boxes, leaf_info, cnn_confidence=1.0):
     cnn_confidence: float [0,1]
     """
     if not boxes or leaf_info is None:
-        return 0.0, {"lesion_area": 0, "leaf_area": 0, "ratio": 0, "cnn_conf": cnn_confidence}
-    
+        return 0.0, {
+            "n_lesions": 0,
+            "lesion_area": 0,
+            "leaf_area": 0,
+            "area_ratio": 0,
+            "cnn_confidence": cnn_confidence,
+            "severity_score": 0.0
+        }
     # Sum lesion areas (exclude healthy classes)
     lesion_area = 0
     n_lesions = 0
@@ -113,8 +119,14 @@ def compute_dynamic_severity(boxes, leaf_info, cnn_confidence=1.0):
     leaf_area = leaf_info["leaf_pixels"]
     
     if leaf_area == 0:
-        return 0.0, {"lesion_area": lesion_area, "leaf_area": 0, "ratio": 0, "cnn_conf": cnn_confidence}
-    
+        return 0.0, {
+            "n_lesions": n_lesions,
+            "lesion_area": int(lesion_area),
+            "leaf_area": 0,
+            "area_ratio": 0,
+            "cnn_confidence": cnn_confidence,
+            "severity_score": 0.0
+        }
     # Compute ratio
     area_ratio = lesion_area / leaf_area
     area_ratio = min(area_ratio, 1.0)  # Clamp

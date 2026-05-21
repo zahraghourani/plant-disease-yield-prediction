@@ -1,7 +1,7 @@
 """
 Plant Disease Detection + Crop Yield Prediction — Web Interface
 Stage 3 TRUE integration:
-  severity = (lesion_area / image_area) x CNN_confidence
+  severity = learned severity head output (per-box, aggregated)
   passed directly into XGBoost as a real input feature.
 
 Run from project root:
@@ -57,7 +57,7 @@ DISEASE_YIELD_IMPACT = {
 }
 
 # Crop-average severity proxies for XGBoost training
-# (FAO dataset has no images; at inference the dynamic formula replaces this)
+# (FAO dataset has no images; at inference the learned severity replaces this)
 CROP_AVG_SEVERITY = {
     "Maize":       (0.35 + 0.40 + 0.00) / 3,
     "Wheat":       (0.35 + 0.40 + 0.00) / 3,
@@ -90,31 +90,43 @@ PESTICIDE_LEVELS = {
 
 
 # =============================================================================
-#  Dynamic severity  (core Stage 3 integration)
+#  Dynamic severity  (USES TRAINED SEVERITY HEAD — no longer manual formula)
 # =============================================================================
-def compute_dynamic_severity(
-    boxes: list, scores: list,
-    image_width: int, image_height: int,
-    cnn_confidence: float,
+def compute_learned_severity(
+    boxes: list, scores: list, severities: list,
     threshold: float = DETECTION_THRESHOLD,
-) -> tuple[float, float, int]:
+) -> tuple[float, float, int, float]:
     """
-    severity = (total lesion area / image area) x CNN_confidence
-    Returns: (severity, lesion_ratio, n_boxes_above_threshold)
+    Uses the trained severity head output instead of manual formula.
+
+    Aggregates per-box learned severities for boxes above detection threshold.
+    Returns: (severity, lesion_ratio, n_boxes, max_severity)
     """
-    image_area = image_width * image_height
-    if image_area == 0:
-        return 0.0, 0.0, 0
     total = 0.0
     n = 0
-    for box, score in zip(boxes, scores):
+    sev_sum = 0.0
+    sev_max = 0.0
+    image_area = 1.0  # not needed for learned severity, but kept for compat
+
+    for box, score, sev in zip(boxes, scores, severities):
         if score >= threshold:
             x1, y1, x2, y2 = box
-            total += (x2 - x1) * (y2 - y1)
+            box_area = (x2 - x1) * (y2 - y1)
+            total += box_area
             n += 1
-    ratio    = total / image_area
-    severity = float(min(max(ratio * cnn_confidence, 0.0), 1.0))
-    return severity, ratio, n
+            sev_val = float(sev)
+            sev_sum += sev_val
+            sev_max = max(sev_max, sev_val)
+
+    ratio = total / image_area if image_area > 0 else 0.0
+
+    # Aggregate learned severities: mean of detected boxes, or 0 if none
+    if n > 0:
+        severity = sev_sum / n
+    else:
+        severity = 0.0
+
+    return float(min(max(severity, 0.0), 1.0)), ratio, n, sev_max
 
 
 # =============================================================================
@@ -129,7 +141,7 @@ class YieldResult:
     pesticide_label: str
     temperature: float
     severity: float
-    severity_method: str   # "dynamic" or "literature"
+    severity_method: str   # "learned" or "literature"
     base_yield: float
     adjusted_yield: float
     estimated_loss: float
@@ -137,16 +149,17 @@ class YieldResult:
     image_preview: str | None = None
     n_lesion_boxes: int = 0
     lesion_ratio: float = 0.0
+    max_severity: float = 0.0  # NEW: max per-box learned severity
 
 
 # =============================================================================
-#  Disease Localiser  — ONE class, correctly handles both checkpoints
+#  Disease Localiser  — uses trained severity head output
 # =============================================================================
 class DiseaseLocaliser:
     """
     Tries to load the severity-aware Faster RCNN checkpoint first.
     Falls back to the plain Faster RCNN, then to COCO-pretrained.
-    Always returns: annotated_bytes, boxes, scores, img_w, img_h
+    Now returns: annotated_bytes, boxes, scores, severities, img_w, img_h
     """
 
     def __init__(self):
@@ -158,7 +171,7 @@ class DiseaseLocaliser:
     def _load_severity_model(self):
         """Load SeverityAwareFasterRCNN trained with severity head."""
         sys.path.insert(0, str(ROOT / "src"))
-        from train_faster_rcnn_torchvision import SeverityAwareFasterRCNN
+        from train_faster_rcnn_fast import SeverityAwareFasterRCNN
         m = SeverityAwareFasterRCNN(num_classes=NUM_CLASSES)
         ckpt = torch.load(str(RCNN_SEVERITY), map_location=self.device)
         m.load_state_dict(ckpt["model_state_dict"])
@@ -196,24 +209,27 @@ class DiseaseLocaliser:
                 return
             except Exception as e:
                 print(f"[Localiser] Plain model failed: {e}")
-        # COCO fallback — loaded fresh each call (no caching needed)
+        # COCO fallback
         self._mode = "coco"
         print("[Localiser] Using COCO-pretrained Faster RCNN (fallback)")
 
     def _run_model(self, tensor):
-        """Run whichever model is loaded; return boxes and scores."""
+        """Run whichever model is loaded; return boxes, scores, and severities."""
         if self._mode == "severity":
             # SeverityAwareFasterRCNN returns detections + 'severities' key
             outputs = self._model(tensor)
             out = outputs[0]
-            boxes  = out["boxes"].cpu().numpy().tolist()
-            scores = out["scores"].cpu().numpy().tolist()
-            # 'severities' are per-box learned severity values (optional use)
-            return boxes, scores
+            boxes     = out["boxes"].cpu().numpy().tolist()
+            scores    = out["scores"].cpu().numpy().tolist()
+            severities = out.get("severities", torch.zeros(len(boxes))).cpu().numpy().tolist()
+            return boxes, scores, severities
         elif self._mode == "plain":
             out = self._model(tensor)[0]
-            return (out["boxes"].cpu().numpy().tolist(),
-                    out["scores"].cpu().numpy().tolist())
+            boxes = out["boxes"].cpu().numpy().tolist()
+            scores = out["scores"].cpu().numpy().tolist()
+            # Plain model has no severity head — fallback to zeros
+            severities = [0.0] * len(boxes)
+            return boxes, scores, severities
         else:
             # COCO fallback
             from torchvision.models.detection import (
@@ -224,18 +240,21 @@ class DiseaseLocaliser:
             m.eval()
             with torch.no_grad():
                 out = m(tensor)[0]
-            return (out["boxes"].cpu().numpy().tolist(),
-                    out["scores"].cpu().numpy().tolist())
+            boxes = out["boxes"].cpu().numpy().tolist()
+            scores = out["scores"].cpu().numpy().tolist()
+            severities = [0.0] * len(boxes)
+            return boxes, scores, severities
 
     # ── Public detect method ──────────────────────────────────────────────────
     def detect(
         self, image_bytes: bytes, threshold: float = DETECTION_THRESHOLD
-    ) -> tuple[bytes, list, list, int, int]:
+    ) -> tuple[bytes, list, list, list, int, int]:
         """
         Returns:
             annotated_bytes – JPEG with bounding boxes drawn
             boxes           – list of [x1,y1,x2,y2] above threshold
             scores          – detection scores
+            severities      – learned severity per box
             width, height   – image pixel dimensions
         """
         self._ensure_loaded()
@@ -247,26 +266,28 @@ class DiseaseLocaliser:
 
         tensor = T.ToTensor()(rgb).unsqueeze(0).to(self.device)
         with torch.no_grad():
-            raw_boxes, raw_scores = self._run_model(tensor)
+            raw_boxes, raw_scores, raw_severities = self._run_model(tensor)
 
         # Filter by threshold
-        boxes  = [b for b, s in zip(raw_boxes, raw_scores) if s >= threshold]
-        scores = [s for s in raw_scores if s >= threshold]
+        boxes      = [b for b, s in zip(raw_boxes, raw_scores) if s >= threshold]
+        scores     = [s for s in raw_scores if s >= threshold]
+        severities = [sev for sev, s in zip(raw_severities, raw_scores) if s >= threshold]
 
-        # Draw boxes
+        # Draw boxes with severity labels
         annotated = bgr.copy()
-        for box, score in zip(boxes, scores):
+        for box, score, sev in zip(boxes, scores, severities):
             x1, y1, x2, y2 = map(int, box)
             cv2.rectangle(annotated, (x1, y1), (x2, y2), (0, 0, 220), 3)
-            lbl = f"{score:.0%}"
-            cv2.rectangle(annotated, (x1, y1-22), (x1+56, y1), (0, 0, 220), -1)
-            cv2.putText(annotated, lbl, (x1+3, y1-5),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 2)
+            lbl = f"{score:.0%} | S:{sev:.2f}"
+            (tw, th), _ = cv2.getTextSize(lbl, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
+            cv2.rectangle(annotated, (x1, y1-th-10), (x1+tw+8, y1), (0, 0, 220), -1)
+            cv2.putText(annotated, lbl, (x1+4, y1-5),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
         if not boxes:
             cv2.rectangle(annotated, (4, 4), (w-4, h-4), (100, 100, 100), 2)
 
         _, buf = cv2.imencode(".jpg", annotated, [cv2.IMWRITE_JPEG_QUALITY, 90])
-        return buf.tobytes(), boxes, scores, w, h
+        return buf.tobytes(), boxes, scores, severities, w, h
 
 
 LOCALISER = DiseaseLocaliser()
@@ -282,7 +303,7 @@ class YieldPredictor:
             "average_rain_fall_mm_per_year",
             "pesticides_tonnes",
             "avg_temp",
-            "disease_severity",   # ← real XGBoost input feature
+            "disease_severity",   # ← real XGBoost input feature (now learned!)
         ]
         self.label_encoder   = LabelEncoder()
         self.yield_model     = self._train_yield_model()
@@ -334,6 +355,7 @@ class YieldPredictor:
         image_preview: str | None = None,
         n_lesion_boxes: int = 0,
         lesion_ratio: float = 0.0,
+        max_severity: float = 0.0,
     ) -> YieldResult:
         """
         severity is passed as a REAL XGBoost feature.
@@ -362,6 +384,7 @@ class YieldPredictor:
             estimated_loss=base_yield - adjusted_yield,
             confidence=confidence, image_preview=image_preview,
             n_lesion_boxes=n_lesion_boxes, lesion_ratio=lesion_ratio,
+            max_severity=max_severity,
         )
 
     def predict_from_image(
@@ -370,8 +393,8 @@ class YieldPredictor:
         rainfall: float, pesticides: float, temperature: float,
         pesticide_label: str | None = None,
     ) -> YieldResult:
-        # ── Stage 2: Faster RCNN — get lesion bounding boxes ─────────────────
-        annotated_bytes, boxes, scores, img_w, img_h = LOCALISER.detect(
+        # ── Stage 2: Faster RCNN — get lesion bounding boxes + learned severities ─
+        annotated_bytes, boxes, scores, severities, img_w, img_h = LOCALISER.detect(
             image_bytes, threshold=DETECTION_THRESHOLD
         )
 
@@ -389,11 +412,10 @@ class YieldPredictor:
         cnn_conf   = float(preds[class_idx])   # softmax [0,1]
         confidence = cnn_conf * 100            # percentage for display
 
-        # ── Stage 3: Dynamic severity → XGBoost ──────────────────────────────
-        severity, lesion_ratio, n_boxes = compute_dynamic_severity(
-            boxes=boxes, scores=scores,
-            image_width=img_w, image_height=img_h,
-            cnn_confidence=cnn_conf, threshold=DETECTION_THRESHOLD,
+        # ── Stage 3: Learned severity → XGBoost ──────────────────────────────
+        severity, lesion_ratio, n_boxes, max_sev = compute_learned_severity(
+            boxes=boxes, scores=scores, severities=severities,
+            threshold=DETECTION_THRESHOLD,
         )
 
         preview = base64.b64encode(annotated_bytes).decode("ascii")
@@ -401,10 +423,11 @@ class YieldPredictor:
         return self.predict_yield(
             crop=crop, disease=disease,
             rainfall=rainfall, pesticides=pesticides, temperature=temperature,
-            severity=severity, severity_method="dynamic",
+            severity=severity, severity_method="learned",
             pesticide_label=pesticide_label,
             confidence=confidence, image_preview=preview,
             n_lesion_boxes=n_boxes, lesion_ratio=lesion_ratio,
+            max_severity=max_sev,
         )
 
 
@@ -453,12 +476,12 @@ def render_result(result: YieldResult | None) -> str:
           <div class="mini-note">Upload an image to get model confidence.</div>
         </div>"""
 
-    if result.severity_method == "dynamic":
+    if result.severity_method == "learned":
         badge = (
-            f'<span class="tag tag-blue">Dynamic &mdash; '
+            f'<span class="tag tag-blue">Learned severity &mdash; '
             f'{result.n_lesion_boxes} lesion box'
             f'{"es" if result.n_lesion_boxes != 1 else ""}, '
-            f'coverage {result.lesion_ratio:.3f}</span>'
+            f'avg {result.severity:.3f}, max {result.max_severity:.3f}</span>'
         )
     else:
         badge = '<span class="tag tag-muted">Literature severity (manual)</span>'
@@ -483,6 +506,8 @@ def render_result(result: YieldResult | None) -> str:
            <strong>{fmt_percent(load_saved_disease_accuracy())}</strong></p>
         <p><span>Severity score</span>
            <strong>{result.severity:.4f}</strong></p>
+        <p><span>Max box severity</span>
+           <strong>{result.max_severity:.4f}</strong></p>
         <p><span>Severity method</span>
            <strong>{result.severity_method.capitalize()}</strong></p>
         <p><span>Rainfall</span>
@@ -499,8 +524,8 @@ def render_result(result: YieldResult | None) -> str:
            <strong>{fmt_number(result.estimated_loss)} hg/ha</strong></p>
       </div>
       <p class="severity-note">
-        Severity = (lesion area / image area) &times; CNN confidence &mdash;
-        passed directly into XGBoost as an input feature.
+        Severity = trained Faster R-CNN severity head output (per-box, aggregated)
+        &mdash; passed directly into XGBoost as an input feature.
       </p>
     </section>"""
 
@@ -597,8 +622,8 @@ def render_page(result: YieldResult | None = None, error: str = "") -> bytes:
   <h1>Plant Disease &amp; Yield Prediction</h1>
   <p>Upload a leaf image: <strong>{DISEASE_MODEL_NAME}</strong> classifies
   the disease and <strong>Faster RCNN</strong> localises lesions.
-  Severity = (lesion area / image area) &times; CNN confidence is passed
-  directly into XGBoost as a real input feature.</p>
+  Severity = trained R-CNN severity head output (per-box, aggregated)
+  is passed directly into XGBoost as a real input feature.</p>
 </header>
 <main>
   {f'<div class="error">{html.escape(error)}</div>' if error else ""}
@@ -606,18 +631,19 @@ def render_page(result: YieldResult | None = None, error: str = "") -> bytes:
     <div class="card"><span>Classifier</span><strong>{DISEASE_MODEL_NAME}</strong></div>
     <div class="card"><span>Accuracy</span><strong>{acc}</strong></div>
     <div class="card"><span>Yield model</span><strong>XGBoost</strong></div>
-    <div class="card"><span>Severity</span><strong>Dynamic</strong></div>
+    <div class="card"><span>Severity</span><strong>Learned</strong></div>
   </section>
   <div class="layout">
     <form method="post" action="/predict-image" enctype="multipart/form-data">
       <div class="section-title">
         <h2>Image Detection</h2>
-        <span class="tag">Dynamic severity</span>
+        <span class="tag">Learned severity</span>
       </div>
       <label for="img">Plant leaf image</label>
       <input id="img" name="image" type="file" accept=".jpg,.jpeg,.png" required>
       <span class="hint">EfficientNetV2S classifies the disease.
-        Faster RCNN localises lesions. Both feed XGBoost together.</span>
+        Faster RCNN localises lesions + predicts per-box severity.
+        Both feed XGBoost together.</span>
       <label for="r1">Rainfall (mm/year)</label>
       <input id="r1" name="rainfall" type="number" value="1000" min="0" step="any">
       <label for="t1">Temperature (&deg;C)</label>
