@@ -129,29 +129,36 @@ def train_model(model_name, person_name):
         validation_split=0.15
     )
     
-    # Callbacks
-    # callbacks = [
-    #     EarlyStopping(
-    #         monitor='val_loss',
-    #         patience=10,
-    #         restore_best_weights=True,
-    #         verbose=1
-    #     ),
-    #     ModelCheckpoint(
-    #         os.path.join(CHECKPOINT_DIR, f'best_{model_name}.h5'),
-    #         monitor='val_accuracy',
-    #         save_best_only=True,
-    #         verbose=1
-    #     ),
-    #     ReduceLROnPlateau(
-    #         monitor='val_loss',
-    #         factor=0.5,
-    #         patience=5,
-    #         min_lr=1e-7,
-    #         verbose=1
-    #     )
-    # ]
-    callbacks = []
+    
+    callbacks = [
+        EarlyStopping(
+            monitor='val_loss',
+            patience=10,
+            restore_best_weights=True,
+            verbose=1
+        ),
+        # ModelCheckpoint(
+        #     os.path.join(CHECKPOINT_DIR, f'best_{model_name}.h5'),
+        #     monitor='val_accuracy',
+        #     save_best_only=True,
+        #     verbose=1
+        # ),
+        ModelCheckpoint(
+            os.path.join(CHECKPOINT_DIR, f'best_{model_name}.weights.h5'),
+            monitor='val_accuracy',
+            save_best_only=True,
+            save_weights_only=True,
+            verbose=1
+        ),
+        ReduceLROnPlateau(
+            monitor='val_loss',
+            factor=0.5,
+            patience=5,
+            min_lr=1e-7,
+            verbose=1
+        )
+    ]
+    # callbacks = []
     # Training Phase 1: Frozen base
     print(f"\n{'='*70}")
     print("Phase 1: Training with frozen base layers")
