@@ -1,13 +1,13 @@
-Model: "model_3"
+Model: "model"
 __________________________________________________________________________________________________
  Layer (type)                   Output Shape         Param #     Connected to                     
 ==================================================================================================
- input_4 (InputLayer)           [(None, 480, 480, 3  0           []                               
+ input_1 (InputLayer)           [(None, 480, 480, 3  0           []                               
                                 )]                                                                
                                                                                                   
- rescaling_6 (Rescaling)        (None, 480, 480, 3)  0           ['input_4[0][0]']                
+ rescaling (Rescaling)          (None, 480, 480, 3)  0           ['input_1[0][0]']                
                                                                                                   
- stem_conv (Conv2D)             (None, 240, 240, 32  864         ['rescaling_6[0][0]']            
+ stem_conv (Conv2D)             (None, 240, 240, 32  864         ['rescaling[0][0]']              
                                 )                                                                 
                                                                                                   
  stem_bn (BatchNormalization)   (None, 240, 240, 32  128         ['stem_conv[0][0]']              
@@ -2762,21 +2762,21 @@ ________________________________________________________________________________
  top_activation (Activation)    (None, 15, 15, 1280  0           ['top_bn[0][0]']                 
                                 )                                                                 
                                                                                                   
- global_average_pooling2d_3 (Gl  (None, 1280)        0           ['top_activation[0][0]']         
- obalAveragePooling2D)                                                                            
+ global_average_pooling2d (Glob  (None, 1280)        0           ['top_activation[0][0]']         
+ alAveragePooling2D)                                                                              
                                                                                                   
- batch_normalization_3 (BatchNo  (None, 1280)        5120        ['global_average_pooling2d_3[0][0
- rmalization)                                                    ]']                              
+ batch_normalization (BatchNorm  (None, 1280)        5120        ['global_average_pooling2d[0][0]'
+ alization)                                                      ]                                
                                                                                                   
- dense_9 (Dense)                (None, 512)          655872      ['batch_normalization_3[0][0]']  
+ dense (Dense)                  (None, 512)          655872      ['batch_normalization[0][0]']    
                                                                                                   
- dropout_6 (Dropout)            (None, 512)          0           ['dense_9[0][0]']                
+ dropout (Dropout)              (None, 512)          0           ['dense[0][0]']                  
                                                                                                   
- dense_10 (Dense)               (None, 256)          131328      ['dropout_6[0][0]']              
+ dense_1 (Dense)                (None, 256)          131328      ['dropout[0][0]']                
                                                                                                   
- dropout_7 (Dropout)            (None, 256)          0           ['dense_10[0][0]']               
+ dropout_1 (Dropout)            (None, 256)          0           ['dense_1[0][0]']                
                                                                                                   
- dense_11 (Dense)               (None, 15)           3855        ['dropout_7[0][0]']              
+ dense_2 (Dense)                (None, 15)           3855        ['dropout_1[0][0]']              
                                                                                                   
 ==================================================================================================
 Total params: 118,543,023

@@ -9,7 +9,7 @@ import os
 IMAGE_SIZE = (640, 640)
 BATCH_SIZE = 2          # reduce to 1 if you get out-of-memory errors
 EPOCHS = 30
-NUM_CLASSES = 13        # number of disease classes (excluding Invalid)
+NUM_CLASSES = 15      # number of disease classes (excluding Invalid)
 
 # Replace with your actual class names (exactly as typed in LabelImg)
 CLASS_NAMES = [

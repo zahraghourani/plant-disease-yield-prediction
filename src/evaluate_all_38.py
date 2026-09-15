@@ -71,7 +71,7 @@ for model_name, (fname, ckpt_type) in sorted(checkpoints.items()):
     person          = MODEL_CONFIG[model_name]['owner'].lower()
 
     try:
-        _, val_gen, class_names, _ = create_data_generators(
+        _, _, test_gen, class_names, _ = create_data_generators(
             DATA_DIR, preprocess_func, input_size, BATCH_SIZE, validation_split=0.15
         )
 
@@ -81,16 +81,16 @@ for model_name, (fname, ckpt_type) in sorted(checkpoints.items()):
 
         # Inference time
         import time
-        val_gen.reset()
+        test_gen.reset()
         dummy = np.zeros((1, *input_size, 3), dtype=np.float32)
         model.predict(dummy, verbose=0)  # warmup
         t0 = time.time()
-        val_gen.reset()
-        y_pred_proba = model.predict(val_gen, verbose=0)
+        test_gen.reset()
+        y_pred_proba = model.predict(test_gen, verbose=0)
         inference_ms = (time.time() - t0) / len(y_pred_proba) * 1000
 
         y_pred = np.argmax(y_pred_proba, axis=1)
-        y_true = val_gen.classes
+        y_true = test_gen.classes
 
         acc                               = accuracy_score(y_true, y_pred)
         prec_mac, rec_mac, f1_mac, _      = precision_recall_fscore_support(y_true, y_pred, average='macro')

@@ -121,7 +121,7 @@ def train_model(model_name, person_name):
     print(f"  Model size: {model_info['size_mb']:.2f} MB")
     
     # Create data generators
-    train_gen, val_gen, class_names, class_weights = create_data_generators(
+    train_gen, val_gen, test_gen, class_names, class_weights = create_data_generators(
         DATA_DIR,
         preprocess_func=preprocess_func,
         input_size=input_size,
@@ -204,10 +204,10 @@ def train_model(model_name, person_name):
     print("Final Evaluation")
     print(f"{'='*70}")
     
-    val_gen.reset()
-    y_pred_proba = model.predict(val_gen, verbose=1)
+    test_gen.reset()
+    y_pred_proba = model.predict(test_gen, verbose=1)
     y_pred = np.argmax(y_pred_proba, axis=1)
-    y_true = val_gen.classes
+    y_true = test_gen.classes
     
     # Calculate all metrics
     metrics = calculate_metrics(y_true, y_pred, y_pred_proba, num_classes=NUM_CLASSES)

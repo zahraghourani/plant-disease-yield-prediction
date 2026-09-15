@@ -25,7 +25,7 @@ except:
 DATA_DIR = r'C:\Users\HPZ4-03-Adm01\plant-disease-yield-prediction\data\Crop___DIsease'
 CHECKPOINT_DIR = './checkpoints'
 BATCH_SIZE = 16
-NUM_CLASSES = 14
+NUM_CLASSES = 15
 
 # Get all checkpoint files (best_ and final_)
 all_checkpoints = [f for f in os.listdir(CHECKPOINT_DIR)

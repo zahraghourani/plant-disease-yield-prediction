@@ -1,0 +1,281 @@
+filename,class,num_gt_boxes,num_pred_boxes,num_matches,mean_iou,tp_at_iou_thresh,fn,fp
+00a20f6f-e8bd-4453-9e25-36ea70feb626___RS_GLSp 4655(1),Corn___Gray_Leaf_Spot,1,1,1,0.9369908571243286,1,0,0
+00a20f6f-e8bd-4453-9e25-36ea70feb626___RS_GLSp 4655_270deg(1),Corn___Gray_Leaf_Spot,7,1,1,0.23565396666526794,0,6,0
+00a20f6f-e8bd-4453-9e25-36ea70feb626___RS_GLSp 4655_90deg(1),Corn___Gray_Leaf_Spot,6,1,1,0.13182488083839417,0,5,0
+00a20f6f-e8bd-4453-9e25-36ea70feb626___RS_GLSp 4655_new30degFlipLR(1),Corn___Gray_Leaf_Spot,5,1,1,0.1576646864414215,0,4,0
+0a01cc10-3892-4311-9c48-0ac6ab3c7c43___RS_GLSp 9352(1),Corn___Gray_Leaf_Spot,3,1,1,0.06567540764808655,0,2,0
+0a01cc10-3892-4311-9c48-0ac6ab3c7c43___RS_GLSp 9352_270deg(1),Corn___Gray_Leaf_Spot,3,3,2,0.06636101379990578,0,1,1
+0a01cc10-3892-4311-9c48-0ac6ab3c7c43___RS_GLSp 9352_90deg(1),Corn___Gray_Leaf_Spot,5,1,1,0.12340498715639114,0,4,0
+0a01cc10-3892-4311-9c48-0ac6ab3c7c43___RS_GLSp 9352_90deg,Corn___Gray_Leaf_Spot,3,1,1,0.13157998025417328,0,2,0
+0a403456-5c5e-4aad-aa89-a118175c6ddd___RS_GLSp 4501(1),Corn___Gray_Leaf_Spot,6,1,1,0.1612236350774765,0,5,0
+0a403456-5c5e-4aad-aa89-a118175c6ddd___RS_GLSp 4501_270deg(1),Corn___Gray_Leaf_Spot,8,2,2,0.09263297915458679,0,6,0
+0a403456-5c5e-4aad-aa89-a118175c6ddd___RS_GLSp 4501_new30degFlipLR(1),Corn___Gray_Leaf_Spot,7,1,1,0.06472598016262054,0,6,0
+0b5492ee-253d-4a13-ad5a-780cb954b09a___RS_GLSp 4615 copy(1),Corn___Gray_Leaf_Spot,5,1,1,0.17337431013584137,0,4,0
+0b5492ee-253d-4a13-ad5a-780cb954b09a___RS_GLSp 4615 copy_270deg(1),Corn___Gray_Leaf_Spot,7,1,1,0.16910840570926666,0,6,0
+0b5492ee-253d-4a13-ad5a-780cb954b09a___RS_GLSp 4615 copy_90deg(1),Corn___Gray_Leaf_Spot,6,1,1,0.2027188390493393,0,5,0
+0b5492ee-253d-4a13-ad5a-780cb954b09a___RS_GLSp 4615 copy_new30degFlipLR(1),Corn___Gray_Leaf_Spot,6,1,1,0.10011658072471619,0,5,0
+0ba90f90-3702-438a-908b-85871f3a34cb___RS_GLSp 4342_270deg(1),Corn___Gray_Leaf_Spot,5,1,1,0.12228281795978546,0,4,0
+0ba90f90-3702-438a-908b-85871f3a34cb___RS_GLSp 4342_new30degFlipLR(1),Corn___Gray_Leaf_Spot,4,1,1,0.0754072368144989,0,3,0
+0c5973d2-b9e1-473c-a5d6-8e9854b918b9___RS_GLSp 9340(1),Corn___Gray_Leaf_Spot,5,1,1,0.03312472999095917,0,4,0
+0ce6543f-9694-4b3a-b767-9bc909f54f73___RS_GLSp 4663 copy(1),Corn___Gray_Leaf_Spot,7,1,1,0.10220025479793549,0,6,0
+0d13a6d5-7993-4a5d-beb1-4f38b7805fac___RS_GLSp 9303(1),Corn___Gray_Leaf_Spot,4,1,1,0.11271373927593231,0,3,0
+Corn___Common_Rust_RS_Rust 2743,Corn___Common_Rust,1,1,1,0.17408336699008942,0,0,0
+Corn___Common_Rust_RS_Rust 2743_flipLR(1),Corn___Common_Rust,2,1,1,0.10127567499876022,0,1,0
+Corn___Common_Rust_RS_Rust 2743_flipLR,Corn___Common_Rust,1,1,1,0.15690551698207855,0,0,0
+Corn___Common_Rust_RS_Rust 2744,Corn___Common_Rust,2,1,1,0.07163867354393005,0,1,0
+Corn___Common_Rust_RS_Rust 2747(1),Corn___Common_Rust,1,2,1,0.21407979726791382,0,0,1
+Corn___Common_Rust_RS_Rust 2747,Corn___Common_Rust,1,2,1,0.18101905286312103,0,0,1
+Corn___Common_Rust_RS_Rust 2747_flipLR,Corn___Common_Rust,2,1,1,0.28623828291893005,0,1,0
+Corn___Common_Rust_RS_Rust 2748(1),Corn___Common_Rust,2,1,1,0.18628236651420593,0,1,0
+Corn___Common_Rust_RS_Rust 2748_flipLR,Corn___Common_Rust,2,1,1,0.09612873941659927,0,1,0
+Corn___Common_Rust_RS_Rust 2753(1),Corn___Common_Rust,1,1,1,0.03218907490372658,0,0,0
+Corn___Common_Rust_RS_Rust 2754_flipLR(1),Corn___Common_Rust,1,1,1,0.034243952482938766,0,0,0
+Corn___Common_Rust_RS_Rust 2754_flipLR,Corn___Common_Rust,1,1,1,0.030050816014409065,0,0,0
+Corn___Common_Rust_RS_Rust 2755_flipLR(1),Corn___Common_Rust,2,1,1,0.10273150354623795,0,1,0
+Corn___Common_Rust_RS_Rust 2756,Corn___Common_Rust,2,1,1,0.22814232110977173,0,1,0
+Corn___Common_Rust_RS_Rust 2759_flipLR(1),Corn___Common_Rust,1,1,1,0.20498134195804596,0,0,0
+Corn___Common_Rust_RS_Rust 2763(1),Corn___Common_Rust,1,1,1,0.0720684677362442,0,0,0
+Corn___Common_Rust_RS_Rust 2765_flipLR(1),Corn___Common_Rust,1,1,1,0.10859980434179306,0,0,0
+Corn___Common_Rust_RS_Rust 2766_flipLR,Corn___Common_Rust,2,1,1,0.20169506967067719,0,1,0
+Corn___Common_Rust_RS_Rust 2768,Corn___Common_Rust,3,1,1,0.17586737871170044,0,2,0
+Corn___Common_Rust_RS_Rust 2769_flipLR,Corn___Common_Rust,3,1,1,0.11433986574411392,0,2,0
+Corn___Healthy_f3944213-7339-4b29-a00a-c235b4c5a2c1___R.S_HL 5533 copy_flipLR(1),Corn___Healthy,1,2,1,0.9884993433952332,1,0,1
+Corn___Healthy_f3ab8b7c-5cb0-4802-bd1e-4c0003d4569c___R.S_HL 7917 copy_flipLR,Corn___Healthy,1,1,1,0.9845585227012634,1,0,0
+Corn___Healthy_f3afeaed-3b7a-4dad-b46e-a2144cfea6ea___R.S_HL 8299 copy 2,Corn___Healthy,1,1,1,0.9846857786178589,1,0,0
+Corn___Healthy_f3afeaed-3b7a-4dad-b46e-a2144cfea6ea___R.S_HL 8299 copy 2_flipLR(1),Corn___Healthy,1,1,1,0.9807906746864319,1,0,0
+Corn___Healthy_f6244bb0-89ef-4256-bc25-701f6a66f1fa___R.S_HL 5508 copy 2,Corn___Healthy,1,1,1,0.9925359487533569,1,0,0
+Corn___Healthy_f6244bb0-89ef-4256-bc25-701f6a66f1fa___R.S_HL 5508 copy 2_flipLR(1),Corn___Healthy,1,1,1,0.9924666285514832,1,0,0
+Corn___Healthy_f67649f1-0d9a-4015-a943-e13a79ace489___R.S_HL 5490 copy,Corn___Healthy,1,1,1,0.9885214567184448,1,0,0
+Corn___Healthy_f6c25b27-60b4-43fe-879d-355b39d0d6e5___R.S_HL 8163 copy_flipLR(1),Corn___Healthy,1,1,1,0.9885373711585999,1,0,0
+Corn___Healthy_f6cd4802-4035-4eab-8a4f-a3ffa6f5f6c0___R.S_HL 8321 copy_flipLR,Corn___Healthy,1,1,1,0.9923915266990662,1,0,0
+Corn___Healthy_f8f2663a-df9b-4c0b-bddc-0f0c6fc5c7cf___R.S_HL 8126 copy,Corn___Healthy,1,1,1,0.9924905300140381,1,0,0
+Corn___Healthy_f8f42808-dfeb-4d02-9a92-cdb138ad28b5___R.S_HL 7988 copy_flipLR,Corn___Healthy,1,1,1,0.9923035502433777,1,0,0
+Corn___Healthy_f924ef4a-eb10-4bc8-9a3d-24a2a3090798___R.S_HL 8336 copy 3(1),Corn___Healthy,1,1,1,0.9923676252365112,1,0,0
+Corn___Healthy_f924ef4a-eb10-4bc8-9a3d-24a2a3090798___R.S_HL 8336 copy 3,Corn___Healthy,1,1,1,0.9884759783744812,1,0,0
+Corn___Healthy_f9b74a5f-2ccc-4c11-8472-c5270ddfbee0___R.S_HL 5517 copy 2,Corn___Healthy,1,1,1,0.992434561252594,1,0,0
+Corn___Healthy_fa7637b2-bfae-41c0-ba18-b9f3d0778ec3___R.S_HL 0622 copy,Corn___Healthy,1,1,1,0.9884691834449768,1,0,0
+Corn___Healthy_faab655c-70a6-4888-9a14-48a4bfedc46e___R.S_HL 5556 copy_flipLR,Corn___Healthy,1,1,1,0.9807800650596619,1,0,0
+Corn___Healthy_faf9f997-3a4d-4723-bb16-ce26362afd77___R.S_HL 8114 copy_flipLR(1),Corn___Healthy,1,1,1,0.9844515323638916,1,0,0
+Corn___Healthy_fe301311-6c07-49d8-933a-aa10287b205e___R.S_HL 8220 copy 4_flipLR,Corn___Healthy,1,1,1,0.9924787282943726,1,0,0
+Corn___Healthy_fe50a4b4-0e43-47d7-afdf-de6544ebbec9___R.S_HL 7952 copy 2(1),Corn___Healthy,1,1,1,0.9652817845344543,1,0,0
+Corn___Healthy_febf9991-3178-49f7-a46d-fe4177e8502a___R.S_HL 7982 copy(1),Corn___Healthy,1,1,1,0.9769337177276611,1,0,0
+Corn___Leaf_Blight_f69b1b10-dd7f-44c0-b084-1959316e4f2a___RS_NLB 3955 copy 2_180deg(1),Corn___Leaf_Blight,2,1,1,0.04224397614598274,0,1,0
+Corn___Leaf_Blight_f69b1b10-dd7f-44c0-b084-1959316e4f2a___RS_NLB 3955 copy 2_180deg,Corn___Leaf_Blight,2,1,1,0.10492857545614243,0,1,0
+Corn___Leaf_Blight_f7cf0608-2278-4a38-a37e-1356bd359651___RS_NLB 3490(1),Corn___Leaf_Blight,1,1,1,0.14342156052589417,0,0,0
+Corn___Leaf_Blight_f7cf0608-2278-4a38-a37e-1356bd359651___RS_NLB 3490_flipTB(1),Corn___Leaf_Blight,1,1,1,0.18805885314941406,0,0,0
+Corn___Leaf_Blight_f7cf0608-2278-4a38-a37e-1356bd359651___RS_NLB 3490_flipTB,Corn___Leaf_Blight,1,1,1,0.2559817433357239,0,0,0
+Corn___Leaf_Blight_f7f43a8d-2f8f-49c1-ad47-c01d9396bd78___RS_NLB 4117_flipTB(1),Corn___Leaf_Blight,1,1,1,0.3155992329120636,0,0,0
+Corn___Leaf_Blight_f9276b30-6706-47b2-9396-3799808cc29a___RS_NLB 4262_180deg(1),Corn___Leaf_Blight,1,1,1,0.23241062462329865,0,0,0
+Corn___Leaf_Blight_f9276b30-6706-47b2-9396-3799808cc29a___RS_NLB 4262_180deg,Corn___Leaf_Blight,1,1,1,0.24409693479537964,0,0,0
+Corn___Leaf_Blight_f9276b30-6706-47b2-9396-3799808cc29a___RS_NLB 4262_flipTB(1),Corn___Leaf_Blight,1,1,1,0.34632959961891174,0,0,0
+Corn___Leaf_Blight_f9e08c76-e2fe-4498-9f90-0b47ffac0e62___RS_NLB 3820(1),Corn___Leaf_Blight,1,1,1,0.31877315044403076,0,0,0
+Corn___Leaf_Blight_f9e08c76-e2fe-4498-9f90-0b47ffac0e62___RS_NLB 3820_flipTB(1),Corn___Leaf_Blight,1,1,1,0.29485848546028137,0,0,0
+Corn___Leaf_Blight_fc1c72a4-1aff-4ebf-83ed-909a7b9dc382___RS_NLB  4670_180deg,Corn___Leaf_Blight,1,1,1,0.11611528694629669,0,0,0
+Corn___Leaf_Blight_fc84ca09-d6c7-493e-957b-c46b2055b702___RS_NLB 3836 copy 2_180deg(1),Corn___Leaf_Blight,3,1,1,0.19140362739562988,0,2,0
+Corn___Leaf_Blight_fcd349a6-5361-40b6-a650-f8319a6d1d58___RS_NLB 3783_180deg(1),Corn___Leaf_Blight,2,1,1,0.06820207834243774,0,1,0
+Corn___Leaf_Blight_fcdc4514-7dfa-4003-aebd-27692e0853dd___RS_NLB 3705_flipTB(1),Corn___Leaf_Blight,1,1,1,0.17485056817531586,0,0,0
+Corn___Leaf_Blight_fd4eff3c-6bfb-42ad-bc34-5ae0f7e30c0f___RS_NLB 0769_180deg(1),Corn___Leaf_Blight,1,2,1,0.927492618560791,1,0,1
+Corn___Leaf_Blight_fd9c7938-4f3f-448d-851b-042e287515f0___RS_NLB 3990(1),Corn___Leaf_Blight,1,1,1,0.318485289812088,0,0,0
+Corn___Leaf_Blight_fda22c64-49ee-4863-a94e-6e16ca177099___RS_NLB 3798(1),Corn___Leaf_Blight,1,1,1,0.21581058204174042,0,0,0
+Corn___Leaf_Blight_fdff294e-df6e-42eb-9bcf-edecf4002891___RS_NLB 4158_flipTB(1),Corn___Leaf_Blight,1,1,1,0.1648210734128952,0,0,0
+Corn___Leaf_Blight_ffa82f14-8320-469b-a621-6475c92a4bb8___RS_NLB 3649_180deg(1),Corn___Leaf_Blight,1,1,1,0.11558393388986588,0,0,0
+Potato___Early_Blight_image (915),Potato___Early_Blight,9,1,1,0.01286991499364376,0,8,0
+Potato___Early_Blight_image (916),Potato___Early_Blight,7,3,3,0.5472464685638746,2,4,0
+Potato___Early_Blight_image (921),Potato___Early_Blight,3,1,1,0.024906538426876068,0,2,0
+Potato___Early_Blight_image (922),Potato___Early_Blight,6,1,1,0.029520070180296898,0,5,0
+Potato___Early_Blight_image (923),Potato___Early_Blight,7,1,1,0.07832682877779007,0,6,0
+Potato___Early_Blight_image (924),Potato___Early_Blight,6,1,1,0.02624865062534809,0,5,0
+Potato___Early_Blight_image (929),Potato___Early_Blight,7,1,1,0.043946534395217896,0,6,0
+Potato___Early_Blight_image (930),Potato___Early_Blight,7,1,1,0.04317086935043335,0,6,0
+Potato___Early_Blight_image (931),Potato___Early_Blight,5,1,1,0.06410275399684906,0,4,0
+Potato___Early_Blight_image (936),Potato___Early_Blight,9,1,1,0.07569385319948196,0,8,0
+Potato___Early_Blight_image (95),Potato___Early_Blight,3,1,1,0.0566590316593647,0,2,0
+Potato___Early_Blight_image (959),Potato___Early_Blight,4,1,1,0.13145571947097778,0,3,0
+Potato___Early_Blight_image (962),Potato___Early_Blight,7,1,1,0.07821883261203766,0,6,0
+Potato___Early_Blight_image (966),Potato___Early_Blight,9,1,1,0.030247947201132774,0,8,0
+Potato___Early_Blight_image (975),Potato___Early_Blight,9,1,1,0.05562002584338188,0,8,0
+Potato___Early_Blight_image (977),Potato___Early_Blight,10,1,1,0.04411919787526131,0,9,0
+Potato___Early_Blight_image (983),Potato___Early_Blight,11,1,1,0.0874040350317955,0,10,0
+Potato___Early_Blight_image (989),Potato___Early_Blight,8,1,1,0.05556822940707207,0,7,0
+Potato___Early_Blight_image (993),Potato___Early_Blight,18,1,1,0.026829387992620468,0,17,0
+Potato___Early_Blight_image (994),Potato___Early_Blight,16,1,1,0.040740229189395905,0,15,0
+Potato___Healthy_de9a8669-d437-40f0-aa56-fe2d8276a1e0___RS_HL 1910,Potato___Healthy,1,1,1,0.9764019846916199,1,0,0
+Potato___Healthy_de9a8669-d437-40f0-aa56-fe2d8276a1e0___RS_HL 1910_new90degFlipLR,Potato___Healthy,1,1,1,0.9716061949729919,1,0,0
+Potato___Healthy_e1b49d1b-165b-4f4e-8a30-735e62bc39c5___RS_HL 1839_new90degFlipTB,Potato___Healthy,1,1,1,0.9596928358078003,1,0,0
+Potato___Healthy_f30983c0-6e20-43cc-8672-4622ca34c830___RS_HL 1949_newGRR,Potato___Healthy,1,1,1,0.9606738090515137,1,0,0
+Potato___Healthy_f4b5ec24-d318-4309-8294-9126450d5d7f___RS_HL 1824_180deg,Potato___Healthy,1,1,1,0.9671348929405212,1,0,0
+Potato___Healthy_f4b5ec24-d318-4309-8294-9126450d5d7f___RS_HL 1824_flipLR,Potato___Healthy,1,1,1,0.926523745059967,1,0,0
+Potato___Healthy_f4b5ec24-d318-4309-8294-9126450d5d7f___RS_HL 1824_new30degFlipLR,Potato___Healthy,1,1,1,0.9335023164749146,1,0,0
+Potato___Healthy_f4be3632-42a1-415a-9f7e-1d5ecb9f49d7___RS_HL 1783_90deg,Potato___Healthy,1,1,1,0.9688981175422668,1,0,0
+Potato___Healthy_f5bd2732-197b-4d8e-bb50-a4966dc416f5___RS_HL 1840_newGGR,Potato___Healthy,1,1,1,0.9729490280151367,1,0,0
+Potato___Healthy_f66af6c0-6fc6-4020-b1de-a73685d497c2___RS_HL 4181,Potato___Healthy,1,1,1,0.9804763793945312,1,0,0
+Potato___Healthy_f66af6c0-6fc6-4020-b1de-a73685d497c2___RS_HL 4181_new200degFlipLR,Potato___Healthy,1,1,1,0.9644069075584412,1,0,0
+Potato___Healthy_f66af6c0-6fc6-4020-b1de-a73685d497c2___RS_HL 4181_newPixel25,Potato___Healthy,1,1,1,0.9808295369148254,1,0,0
+Potato___Healthy_image (108),Potato___Healthy,1,2,1,0.9718315005302429,1,0,1
+Potato___Healthy_image (136),Potato___Healthy,1,1,1,0.9809015393257141,1,0,0
+Potato___Healthy_image (147),Potato___Healthy,1,1,1,0.9662399291992188,1,0,0
+Potato___Healthy_image (20),Potato___Healthy,1,1,1,0.9687090516090393,1,0,0
+Potato___Healthy_image (3),Potato___Healthy,1,1,1,0.9635983109474182,1,0,0
+Potato___Healthy_image (43),Potato___Healthy,1,1,1,0.9645459651947021,1,0,0
+Potato___Healthy_image (44),Potato___Healthy,1,1,1,0.9864713549613953,1,0,0
+Potato___Healthy_image (8),Potato___Healthy,1,1,1,0.9737356305122375,1,0,0
+Potato___Late_Blight_image (747),Potato___Late_Blight,1,2,1,0.8994160294532776,1,0,1
+Potato___Late_Blight_image (748),Potato___Late_Blight,1,1,1,0.1859567016363144,0,0,0
+Potato___Late_Blight_image (75),Potato___Late_Blight,4,1,1,0.11230891942977905,0,3,0
+Potato___Late_Blight_image (764),Potato___Late_Blight,5,1,1,0.17569980025291443,0,4,0
+Potato___Late_Blight_image (766),Potato___Late_Blight,5,1,1,0.11315253376960754,0,4,0
+Potato___Late_Blight_image (770),Potato___Late_Blight,1,2,1,0.872260332107544,1,0,1
+Potato___Late_Blight_image (774),Potato___Late_Blight,6,1,1,0.14678800106048584,0,5,0
+Potato___Late_Blight_image (781),Potato___Late_Blight,6,1,1,0.12597109377384186,0,5,0
+Potato___Late_Blight_image (803),Potato___Late_Blight,1,2,1,0.7212998270988464,1,0,1
+Potato___Late_Blight_image (805),Potato___Late_Blight,1,2,1,0.8640320301055908,1,0,1
+Potato___Late_Blight_image (811),Potato___Late_Blight,10,1,1,0.06689232587814331,0,9,0
+Potato___Late_Blight_image (819),Potato___Late_Blight,1,1,1,0.06475844979286194,0,0,0
+Potato___Late_Blight_image (86),Potato___Late_Blight,1,1,1,0.439668208360672,0,0,0
+Potato___Late_Blight_image (895),Potato___Late_Blight,1,1,1,0.16283082962036133,0,0,0
+Potato___Late_Blight_image (907),Potato___Late_Blight,2,1,1,0.2353670448064804,0,1,0
+Potato___Late_Blight_image (920),Potato___Late_Blight,2,1,1,0.24242205917835236,0,1,0
+Potato___Late_Blight_image (93),Potato___Late_Blight,4,1,1,0.14396356046199799,0,3,0
+Potato___Late_Blight_image (943),Potato___Late_Blight,5,1,1,0.10175693780183792,0,4,0
+Potato___Late_Blight_image (944),Potato___Late_Blight,2,1,1,0.10489781945943832,0,1,0
+Potato___Late_Blight_image (98),Potato___Late_Blight,2,1,1,0.1030195876955986,0,1,0
+Rice___Brown_Spot_IMG_20190420_195049,Rice___Brown_Spot,3,2,2,0.19726196874398738,0,1,0
+Rice___Brown_Spot_IMG_20190420_195050,Rice___Brown_Spot,4,2,2,0.31303554971236736,1,2,0
+Rice___Brown_Spot_IMG_20190420_195051,Rice___Brown_Spot,4,3,3,0.37251117747897905,1,1,0
+Rice___Brown_Spot_IMG_20190420_195141_1,Rice___Brown_Spot,3,3,3,0.34894368704408407,1,0,0
+Rice___Brown_Spot_IMG_20190420_195142,Rice___Brown_Spot,3,2,2,0.3041754635050893,1,1,0
+Rice___Brown_Spot_IMG_20190420_195159,Rice___Brown_Spot,4,2,2,0.17646257067099214,0,2,0
+Rice___Brown_Spot_IMG_20190420_195201,Rice___Brown_Spot,4,1,1,0.011574740521609783,0,3,0
+Rice___Brown_Spot_IMG_20190420_195224,Rice___Brown_Spot,7,3,3,0.48327275458723307,2,4,0
+Rice___Brown_Spot_IMG_20190420_195435_1,Rice___Brown_Spot,6,3,3,0.3009548106541236,1,3,0
+Rice___Brown_Spot_IMG_20190420_195437,Rice___Brown_Spot,5,4,4,0.4111537894932553,2,1,0
+Rice___Brown_Spot_IMG_20190420_195439,Rice___Brown_Spot,5,3,3,0.33546531091754633,1,2,0
+Rice___Brown_Spot_IMG_20190420_195444,Rice___Brown_Spot,6,2,2,0.33713932568207383,1,4,0
+Rice___Brown_Spot_IMG_20190420_200332,Rice___Brown_Spot,1,3,1,0.8509075045585632,1,0,2
+Rice___Brown_Spot_IMG_20190421_200132,Rice___Brown_Spot,1,3,1,0.7070941925048828,1,0,2
+Rice___Brown_Spot_IMG_20190424_133956,Rice___Brown_Spot,1,2,1,0.7549014687538147,1,0,1
+Rice___Brown_Spot_IMG_3018,Rice___Brown_Spot,1,2,1,0.24196083843708038,0,0,1
+Rice___Brown_Spot_IMG_3073,Rice___Brown_Spot,1,2,1,0.527182400226593,1,0,1
+Rice___Brown_Spot_IMG_3175,Rice___Brown_Spot,1,2,1,0.7236279249191284,1,0,1
+Rice___Brown_Spot_IMG_3229,Rice___Brown_Spot,6,4,4,0.3816324787621852,2,2,0
+Rice___Brown_Spot_IMG_3239,Rice___Brown_Spot,2,2,2,0.28991066140588373,1,0,0
+Rice___Healthy_IMG_20190419_172925,Rice___Healthy,1,1,1,0.9696844220161438,1,0,0
+Rice___Healthy_IMG_20190419_172927,Rice___Healthy,1,1,1,0.983391284942627,1,0,0
+Rice___Healthy_IMG_20190419_172936,Rice___Healthy,1,1,1,0.9915692210197449,1,0,0
+Rice___Healthy_IMG_20190419_174214,Rice___Healthy,1,1,1,0.9734043478965759,1,0,0
+Rice___Healthy_IMG_20190419_174218,Rice___Healthy,1,1,1,0.9914258718490601,1,0,0
+Rice___Healthy_IMG_20190419_174306,Rice___Healthy,1,1,1,0.9841363430023193,1,0,0
+Rice___Healthy_IMG_20190419_174457,Rice___Healthy,1,1,1,0.9884129762649536,1,0,0
+Rice___Healthy_IMG_20190419_175247,Rice___Healthy,1,1,1,0.9965012073516846,1,0,0
+Rice___Healthy_IMG_20190420_194339,Rice___Healthy,1,1,1,0.9506275653839111,1,0,0
+Rice___Healthy_IMG_20190420_200326,Rice___Healthy,1,1,1,0.9705815315246582,1,0,0
+Rice___Healthy_IMG_20190420_200435,Rice___Healthy,1,1,1,0.8839958906173706,1,0,0
+Rice___Healthy_IMG_20190420_200445,Rice___Healthy,1,1,1,0.8303869366645813,1,0,0
+Rice___Healthy_IMG_20190421_195404,Rice___Healthy,1,1,1,0.8805614113807678,1,0,0
+Rice___Healthy_IMG_20190424_130522,Rice___Healthy,1,1,1,0.9818739295005798,1,0,0
+Rice___Healthy_IMG_20190424_131348,Rice___Healthy,1,1,1,0.7950900197029114,1,0,0
+Rice___Healthy_IMG_20190424_131722,Rice___Healthy,1,1,1,0.8719622492790222,1,0,0
+Rice___Healthy_IMG_20190424_132441,Rice___Healthy,1,1,1,0.8528904318809509,1,0,0
+Rice___Healthy_IMG_20190424_133613,Rice___Healthy,1,1,1,0.868842601776123,1,0,0
+Rice___Healthy_IMG_20190424_134049,Rice___Healthy,1,1,1,0.9617689251899719,1,0,0
+Rice___Healthy_IMG_20190424_134050,Rice___Healthy,1,1,1,0.95953369140625,1,0,0
+Rice___Hispa_IMG_20190419_165212,Rice___Hispa,4,1,1,0.1518917977809906,0,3,0
+Rice___Hispa_IMG_20190419_165619,Rice___Hispa,3,1,1,0.015747148543596268,0,2,0
+Rice___Hispa_IMG_20190419_165623,Rice___Hispa,3,1,1,0.0196158979088068,0,2,0
+Rice___Hispa_IMG_20190419_170507,Rice___Hispa,1,1,1,0.06693768501281738,0,0,0
+Rice___Hispa_IMG_20190419_170753,Rice___Hispa,2,1,1,0.0035346858203411102,0,1,0
+Rice___Hispa_IMG_20190419_170835,Rice___Hispa,2,1,1,0.012821510434150696,0,1,0
+Rice___Hispa_IMG_20190419_170851,Rice___Hispa,4,1,1,0.016074469313025475,0,3,0
+Rice___Hispa_IMG_20190419_170919,Rice___Hispa,3,1,1,0.0972852036356926,0,2,0
+Rice___Hispa_IMG_20190419_171924,Rice___Hispa,3,1,1,0.0022592227905988693,0,2,0
+Rice___Hispa_IMG_20190419_171944,Rice___Hispa,2,1,1,0.001027547987177968,0,1,0
+Rice___Hispa_IMG_20190419_172704,Rice___Hispa,2,1,1,0.045797400176525116,0,1,0
+Rice___Hispa_IMG_20190419_172745,Rice___Hispa,3,1,1,0.024420054629445076,0,2,0
+Rice___Hispa_IMG_20190419_172808,Rice___Hispa,3,1,1,0.025472600013017654,0,2,0
+Rice___Hispa_IMG_20190419_173927,Rice___Hispa,2,1,1,0.018340298905968666,0,1,0
+Rice___Hispa_IMG_20190420_194408,Rice___Hispa,2,1,1,0.014537887647747993,0,1,0
+Rice___Hispa_IMG_20190420_200337,Rice___Hispa,2,1,1,0.03424789011478424,0,1,0
+Rice___Hispa_IMG_20190424_125640,Rice___Hispa,1,1,1,0.008320569060742855,0,0,0
+Rice___Hispa_IMG_20190424_125821,Rice___Hispa,3,2,2,0.41590177454054356,1,1,0
+Rice___Hispa_IMG_20190424_131808,Rice___Hispa,3,1,1,0.005770055111497641,0,2,0
+Rice___Hispa_IMG_20190424_131818,Rice___Hispa,3,1,1,0.0412716343998909,0,2,0
+Rice___Leaf_Blast_IMG_20190420_191459,Rice___Leaf_Blast,1,1,1,0.061228033155202866,0,0,0
+Rice___Leaf_Blast_IMG_20190424_130012,Rice___Leaf_Blast,1,2,1,0.14621655642986298,0,0,1
+Rice___Leaf_Blast_IMG_3020,Rice___Leaf_Blast,2,1,1,0.12834151089191437,0,1,0
+Rice___Leaf_Blast_IMG_3103,Rice___Leaf_Blast,2,1,1,0.01112296525388956,0,1,0
+Rice___Leaf_Blast_IMG_4765,Rice___Leaf_Blast,1,2,1,0.6672994494438171,1,0,1
+Rice___Leaf_Blast_IMG_4851,Rice___Leaf_Blast,1,2,1,0.409084677696228,0,0,1
+Rice___Leaf_Blast_IMG_4852,Rice___Leaf_Blast,1,2,1,0.47316449880599976,0,0,1
+Rice___Leaf_Blast_IMG_5495,Rice___Leaf_Blast,1,2,1,0.565589964389801,1,0,1
+Rice___Leaf_Blast_blast_14,Rice___Leaf_Blast,3,1,1,0.07417785376310349,0,2,0
+Rice___Leaf_Blast_blast_15,Rice___Leaf_Blast,2,1,1,0.0914812907576561,0,1,0
+Rice___Leaf_Blast_blast_16,Rice___Leaf_Blast,2,2,2,0.08568323403596878,0,0,0
+Rice___Leaf_Blast_blast_29,Rice___Leaf_Blast,1,1,1,0.12035556137561798,0,0,0
+Rice___Leaf_Blast_blast_3,Rice___Leaf_Blast,3,1,1,0.09286681562662125,0,2,0
+Rice___Leaf_Blast_blast_32,Rice___Leaf_Blast,2,2,2,0.1495199203491211,0,0,0
+Rice___Leaf_Blast_blast_34,Rice___Leaf_Blast,3,1,1,0.10266193002462387,0,2,0
+Rice___Leaf_Blast_blast_40,Rice___Leaf_Blast,2,1,1,0.14351986348628998,0,1,0
+Rice___Leaf_Blast_blast_59,Rice___Leaf_Blast,1,1,1,0.26179108023643494,0,0,0
+Rice___Leaf_Blast_blast_60,Rice___Leaf_Blast,1,1,1,0.3105376064777374,0,0,0
+Rice___Leaf_Blast_blast_65,Rice___Leaf_Blast,3,2,2,0.34830784797668457,0,1,0
+Rice___Leaf_Blast_blast_72,Rice___Leaf_Blast,2,2,2,0.3217405378818512,1,0,0
+Wheat___Brown_Rust_Brown_rust738,Wheat___Brown_Rust,1,1,1,0.7776311635971069,1,0,0
+Wheat___Brown_Rust_Brown_rust740,Wheat___Brown_Rust,1,0,0,0.0,0,1,0
+Wheat___Brown_Rust_Brown_rust741,Wheat___Brown_Rust,1,0,0,0.0,0,1,0
+Wheat___Brown_Rust_Brown_rust764,Wheat___Brown_Rust,1,0,0,0.0,0,1,0
+Wheat___Brown_Rust_Brown_rust765,Wheat___Brown_Rust,1,2,1,0.6901208758354187,1,0,1
+Wheat___Brown_Rust_Brown_rust770,Wheat___Brown_Rust,1,1,1,0.25608813762664795,0,0,0
+Wheat___Brown_Rust_Brown_rust774,Wheat___Brown_Rust,1,1,1,0.10107934474945068,0,0,0
+Wheat___Brown_Rust_Brown_rust785,Wheat___Brown_Rust,1,1,1,0.04991108179092407,0,0,0
+Wheat___Brown_Rust_Brown_rust805,Wheat___Brown_Rust,1,0,0,0.0,0,1,0
+Wheat___Brown_Rust_Brown_rust807,Wheat___Brown_Rust,8,1,1,0.02685585804283619,0,7,0
+Wheat___Brown_Rust_Brown_rust812,Wheat___Brown_Rust,4,0,0,0.0,0,4,0
+Wheat___Brown_Rust_Brown_rust820,Wheat___Brown_Rust,2,0,0,0.0,0,2,0
+Wheat___Brown_Rust_Brown_rust858,Wheat___Brown_Rust,8,1,1,0.08257336914539337,0,7,0
+Wheat___Brown_Rust_Brown_rust889,Wheat___Brown_Rust,2,0,0,0.0,0,2,0
+Wheat___Brown_Rust_Brown_rust901,Wheat___Brown_Rust,1,1,1,0.6691926717758179,1,0,0
+Wheat___Brown_Rust_Brown_rust913,Wheat___Brown_Rust,2,0,0,0.0,0,2,0
+Wheat___Brown_Rust_Brown_rust923,Wheat___Brown_Rust,2,0,0,0.0,0,2,0
+Wheat___Brown_Rust_Brown_rust938,Wheat___Brown_Rust,6,1,1,0.19654114544391632,0,5,0
+Wheat___Brown_Rust_Brown_rust939,Wheat___Brown_Rust,3,1,1,0.2954186797142029,0,2,0
+Wheat___Brown_Rust_Brown_rust978,Wheat___Brown_Rust,1,2,1,0.8851844668388367,1,0,1
+Wheat___Healthy_loh(2),Wheat___Healthy,1,1,1,0.46235838532447815,0,0,0
+Wheat___Healthy_loh(20),Wheat___Healthy,3,2,2,0.5480071753263474,1,1,0
+Wheat___Healthy_loh(27),Wheat___Healthy,3,1,1,0.05403606593608856,0,2,0
+Wheat___Healthy_loh(29),Wheat___Healthy,3,1,1,0.2091638743877411,0,2,0
+Wheat___Healthy_loh(3),Wheat___Healthy,1,2,1,0.4915090799331665,0,0,1
+Wheat___Healthy_loh(32),Wheat___Healthy,1,2,1,0.23482462763786316,0,0,1
+Wheat___Healthy_loh(4),Wheat___Healthy,1,2,1,0.1412700116634369,0,0,1
+Wheat___Healthy_loh(41),Wheat___Healthy,2,1,1,0.4180525541305542,0,1,0
+Wheat___Healthy_loh(42),Wheat___Healthy,1,1,1,0.8174971342086792,1,0,0
+Wheat___Healthy_loh(43),Wheat___Healthy,1,1,1,0.10617481172084808,0,0,0
+Wheat___Healthy_loh(45),Wheat___Healthy,1,1,1,0.1789890080690384,0,0,0
+Wheat___Healthy_loh(49),Wheat___Healthy,1,2,1,0.865265429019928,1,0,1
+Wheat___Healthy_loh(66),Wheat___Healthy,1,1,1,0.9197966456413269,1,0,0
+Wheat___Healthy_loh(75),Wheat___Healthy,1,1,1,0.9676423072814941,1,0,0
+Wheat___Healthy_loh(8),Wheat___Healthy,1,3,1,0.8812302947044373,1,0,2
+Wheat___Healthy_loh(81),Wheat___Healthy,1,1,1,0.9158294200897217,1,0,0
+Wheat___Healthy_loh(85),Wheat___Healthy,1,1,1,0.9578160047531128,1,0,0
+Wheat___Healthy_loh(87),Wheat___Healthy,1,1,1,0.8900038599967957,1,0,0
+Wheat___Healthy_loh(90),Wheat___Healthy,1,1,1,0.932926595211029,1,0,0
+Wheat___Healthy_loh(95),Wheat___Healthy,1,1,1,0.9608867764472961,1,0,0
+Wheat___Yellow_Rust_Yellow_rust864,Wheat___Yellow_Rust,1,1,1,0.13959506154060364,0,0,0
+Wheat___Yellow_Rust_Yellow_rust868,Wheat___Yellow_Rust,2,1,1,0.33188924193382263,0,1,0
+Wheat___Yellow_Rust_Yellow_rust876,Wheat___Yellow_Rust,6,0,0,0.0,0,6,0
+Wheat___Yellow_Rust_Yellow_rust935,Wheat___Yellow_Rust,2,2,2,0.2449643313884735,0,0,0
+Wheat___Yellow_Rust_Yellow_rust936,Wheat___Yellow_Rust,2,1,1,0.36248186230659485,0,1,0
+Wheat___Yellow_Rust_Yellow_rust937,Wheat___Yellow_Rust,1,2,1,0.7264853119850159,1,0,1
+Wheat___Yellow_Rust_Yellow_rust938,Wheat___Yellow_Rust,5,1,1,0.0665728747844696,0,4,0
+Wheat___Yellow_Rust_Yellow_rust941,Wheat___Yellow_Rust,4,1,1,0.1461346596479416,0,3,0
+Wheat___Yellow_Rust_Yellow_rust951,Wheat___Yellow_Rust,2,0,0,0.0,0,2,0
+Wheat___Yellow_Rust_Yellow_rust952,Wheat___Yellow_Rust,3,1,1,0.06234293058514595,0,2,0
+Wheat___Yellow_Rust_Yellow_rust955,Wheat___Yellow_Rust,7,1,1,0.1261722892522812,0,6,0
+Wheat___Yellow_Rust_Yellow_rust956,Wheat___Yellow_Rust,2,2,2,0.19859200716018677,0,0,0
+Wheat___Yellow_Rust_Yellow_rust959,Wheat___Yellow_Rust,5,1,1,0.04954652115702629,0,4,0
+Wheat___Yellow_Rust_Yellow_rust962,Wheat___Yellow_Rust,3,1,1,0.19778163731098175,0,2,0
+Wheat___Yellow_Rust_Yellow_rust969,Wheat___Yellow_Rust,10,1,1,0.1488891839981079,0,9,0
+Wheat___Yellow_Rust_Yellow_rust978,Wheat___Yellow_Rust,8,1,1,0.11793381720781326,0,7,0
+Wheat___Yellow_Rust_Yellow_rust992,Wheat___Yellow_Rust,2,0,0,0.0,0,2,0
+Wheat___Yellow_Rust_Yellow_rust997,Wheat___Yellow_Rust,2,0,0,0.0,0,2,0
+Wheat___Yellow_Rust_Yellow_rust998,Wheat___Yellow_Rust,5,1,1,0.09710630029439926,0,4,0
+Wheat___Yellow_Rust_Yellow_rust999,Wheat___Yellow_Rust,3,1,1,0.22771887481212616,0,2,0

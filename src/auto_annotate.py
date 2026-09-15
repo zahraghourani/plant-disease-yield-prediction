@@ -36,6 +36,7 @@ MIN_IMG_SIZE = 100  # pixels
 DISEASE_PROMPTS = {
     "Corn___Common_Rust":    "rust spots on corn leaf",
     "Corn___Leaf_Blight":    "blight lesion on corn leaf",
+    "Corn___Gray_Leaf_Spot": "gray leaf spot lesions on corn leaf",
     "Corn___Healthy":        "healthy green corn leaf",
     "Potato___Early_Blight": "early blight spots on potato leaf",
     "Potato___Late_Blight":  "late blight on potato leaf",
