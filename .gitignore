@@ -38,7 +38,8 @@ checkpoints/
 *.pkl
 *.pth
 *.ckpt
-
+results_LEAKY_SPLIT_V2/
+results_OLD_INVALID_SPLIT/
 # Results (keep structure but not large files)
 results/logs/
 results/*.log
