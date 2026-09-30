@@ -13,12 +13,21 @@ from sklearn.utils.class_weight import compute_class_weight
 
 def _get_base_id(filepath):
     fname = os.path.basename(filepath)
-    fname = re.sub(r'\.(jpg|jpeg|png)$', '', fname, flags=re.IGNORECASE)
-    fname = re.sub(r'\(\d+\)$', '', fname)
-    fname = re.sub(r'_?(flipLR|flipTB|\d{2,3}deg)', '', fname, flags=re.IGNORECASE)
-    fname = re.sub(r'_new\w*', '', fname, flags=re.IGNORECASE)
-    fname = re.sub(r'\s*copy\s*\d*$', '', fname, flags=re.IGNORECASE)
-    return fname.strip()
+    fname_noext = re.sub(r'\.(jpg|jpeg|png)$', '', fname, flags=re.IGNORECASE)
+
+    # "image (N)" is NOT a duplicate marker in this dataset — these are
+    # distinct, unique photos with generic sequential naming, not
+    # augmented copies of a shared source. Keep each one unique.
+    if re.match(r'^image\s*\(\d+\)$', fname_noext, flags=re.IGNORECASE):
+        return fname_noext.strip()
+
+    # Otherwise, these suffixes DO indicate a real augmented duplicate.
+    stripped = fname_noext
+    stripped = re.sub(r'\(\d+\)$', '', stripped)
+    stripped = re.sub(r'_?(flipLR|flipTB|\d{2,3}deg)', '', stripped, flags=re.IGNORECASE)
+    stripped = re.sub(r'_new\w*', '', stripped, flags=re.IGNORECASE)
+    stripped = re.sub(r'\s*copy\s*\d*$', '', stripped, flags=re.IGNORECASE)
+    return stripped.strip()
 
 
 def _build_file_dataframe(data_dir):

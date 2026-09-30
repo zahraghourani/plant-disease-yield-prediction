@@ -18,25 +18,30 @@ SPLITS_CSV = './splits.csv'
 def get_base_id(filepath):
     """
     Strip augmentation suffixes to recover a canonical 'base photo id'.
-    Handles patterns seen in this dataset:
-      RS_Rust 2743.JPG
-      RS_Rust 2743_flipLR.JPG
-      RS_Rust 2743_flipLR(1).JPG
-      RS_Rust 2743(1).JPG
-      ..._180deg, ..._90deg, ..._270deg, ..._flipTB, ..._newXXdegFlipLR, " copy", " copy 2"
     """
     fname = filepath.split('\\')[-1].split('/')[-1]
-    fname = re.sub(r'\.(jpg|jpeg|png)$', '', fname, flags=re.IGNORECASE)
-    fname = re.sub(r'\(\d+\)$', '', fname)                       # trailing (1), (2)
-    fname = re.sub(r'_?(flipLR|flipTB|\d{2,3}deg)', '', fname, flags=re.IGNORECASE)
-    fname = re.sub(r'_new\w*', '', fname, flags=re.IGNORECASE)   # _newGRR, _new30degFlipLR etc.
-    fname = re.sub(r'\s*copy\s*\d*$', '', fname, flags=re.IGNORECASE)
-    return fname.strip()
+    fname_noext = re.sub(r'\.(jpg|jpeg|png)$', '', fname, flags=re.IGNORECASE)
+
+    # "image (N)" is NOT a duplicate marker in this dataset — these are
+    # distinct, unique photos with generic sequential naming, not
+    # augmented copies of a shared source. Keep each one unique.
+    if re.match(r'^image\s*\(\d+\)$', fname_noext, flags=re.IGNORECASE):
+        return fname_noext.strip()
+
+    # Otherwise, these suffixes DO indicate a real augmented duplicate.
+    stripped = fname_noext
+    stripped = re.sub(r'\(\d+\)$', '', stripped)
+    stripped = re.sub(r'_?(flipLR|flipTB|\d{2,3}deg)', '', stripped, flags=re.IGNORECASE)
+    stripped = re.sub(r'_new\w*', '', stripped, flags=re.IGNORECASE)
+    stripped = re.sub(r'\s*copy\s*\d*$', '', stripped, flags=re.IGNORECASE)
+    return stripped.strip()
 
 
 def main():
     df = pd.read_csv(SPLITS_CSV)
-    df['base_id'] = df['filepath'].apply(get_base_id)
+    # splits.csv already has the correct, class-namespaced base_id
+    # written by data_preprocessing.py — don't recompute it here.
+    # (df['base_id'] already exists as a column from the CSV.)
 
     print(f"Total files: {len(df)}")
     print(f"Unique base ids: {df['base_id'].nunique()}")
