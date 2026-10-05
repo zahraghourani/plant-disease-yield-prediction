@@ -1,3 +1,22 @@
+"""
+evaluate_faster_rcnn.py
+
+FIXED: previously evaluated mAP on the ENTIRE 2,256-image dataset
+(including images the model was trained on), which would badly inflate
+reported mAP since the model has directly seen those boxes during
+training. This version evaluates ONLY on the held-out validation set,
+using the SAME group-aware, fixed-seed split (seed=42) used during
+training, so no augmented-duplicate siblings leak between what the
+model trained on and what it's evaluated on.
+
+Imports the model/dataset classes from train_faster_rcnn_fast.py (the
+script actually used to produce the current checkpoint) rather than
+train_faster_rcnn_torchvision.py, to guarantee architecture
+compatibility with the checkpoint being loaded.
+
+Run from project root:
+    python src/evaluate_faster_rcnn.py
+"""
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -7,8 +26,10 @@ import torch
 from pathlib import Path
 from pycocotools.cocoeval import COCOeval
 from torch.utils.data import DataLoader
-from train_faster_rcnn_torchvision import (
-    CocoDetection, get_transform, SeverityAwareFasterRCNN
+
+from train_faster_rcnn_fast import (
+    CocoDetection, get_transform, SeverityAwareFasterRCNN,
+    group_aware_split, SEED
 )
 
 ROOT        = Path(__file__).resolve().parents[1]
@@ -16,7 +37,7 @@ RESULTS_DIR = ROOT / "results" / "faster_rcnn"
 FIGURES_DIR = ROOT / "results" / "figures"
 
 
-def evaluate(model, data_loader, device, coco_gt):
+def evaluate(model, data_loader, device, coco_gt, val_ids):
     model.eval()
     results        = []
     severity_mae   = 0.0
@@ -43,7 +64,6 @@ def evaluate(model, data_loader, device, coco_gt):
                         "score": float(score),
                     })
 
-                # Severity MAE — only if model outputs severities
                 gt_boxes = targets[i]["boxes"].to(device)
                 if len(gt_boxes) > 0:
                     img_area = images[i].shape[-2] * images[i].shape[-1]
@@ -57,7 +77,7 @@ def evaluate(model, data_loader, device, coco_gt):
                     severity_count += 1
 
     if severity_count > 0:
-        print(f"\nSeverity MAE (learned head): "
+        print(f"\nSeverity MAE (learned head, held-out val set): "
               f"{severity_mae / severity_count:.4f}")
     else:
         print("\nNo severity outputs found (plain model or no GT boxes).")
@@ -68,6 +88,11 @@ def evaluate(model, data_loader, device, coco_gt):
 
     coco_dt   = coco_gt.loadRes(results)
     coco_eval = COCOeval(coco_gt, coco_dt, "bbox")
+    # Restrict evaluation to ONLY the held-out validation image ids.
+    # coco_gt itself contains the full dataset's index (COCO() loads the
+    # whole JSON), so without this restriction COCOeval would silently
+    # evaluate against all images, not just the val subset.
+    coco_eval.params.imgIds = sorted(val_ids)
     coco_eval.evaluate()
     coco_eval.accumulate()
     coco_eval.summarize()
@@ -122,7 +147,7 @@ def save_per_class_ap_outputs(per_class_df, coco_eval):
     bars = ax.barh(class_names, ap_values, color="#2d6cdf")
     ax.set_xlim(0, 1)
     ax.set_xlabel("AP@0.5")
-    ax.set_title("Faster R-CNN Per-Class AP@0.5")
+    ax.set_title("Faster R-CNN Per-Class AP@0.5 (held-out val set)")
     ax.grid(axis="x", linestyle="--", alpha=0.35)
     for bar, value in zip(bars, ap_values):
         ax.text(min(value+0.015, 0.98), bar.get_y()+bar.get_height()/2,
@@ -142,10 +167,14 @@ def main():
     data_dir = "data/Crop___DIsease"
     ann_file = "detection_data/annotations/train_coco.json"
 
-    dataset  = CocoDetection(data_dir, ann_file, transforms=get_transform())
-    coco_gt  = dataset.coco
+    # ── FIX: use the SAME group-aware, fixed-seed split as training ──────────
+    train_ids, val_ids = group_aware_split(ann_file, train_frac=0.8, seed=SEED)
+    print(f"Evaluating on held-out VAL set only: {len(val_ids)} images "
+          f"(NOT the full {len(train_ids) + len(val_ids)}-image dataset)")
 
-    # ── FIX: define num_classes BEFORE using it ───────────────────────────────
+    dataset = CocoDetection(data_dir, ann_file, image_ids=val_ids, transforms=get_transform())
+    coco_gt = dataset.coco
+
     num_classes = len(coco_gt.getCatIds()) + 1  # +1 for background
     print(f"Number of classes (including background): {num_classes}")
 
@@ -154,10 +183,8 @@ def main():
         collate_fn=lambda x: tuple(zip(*x)),
     )
 
-    # ── Load severity-aware model ─────────────────────────────────────────────
     checkpoint_path = ROOT / "checkpoints" / "faster_rcnn_with_severity.pth"
     if not checkpoint_path.exists():
-        # Fall back to plain checkpoint
         checkpoint_path = ROOT / "faster_rcnn_with_severity.pth"
 
     print(f"Loading checkpoint: {checkpoint_path}")
@@ -167,15 +194,15 @@ def main():
     model.to(device)
     print("Model loaded successfully.")
 
-    coco_eval = evaluate(model, loader, device, coco_gt)
+    coco_eval = evaluate(model, loader, device, coco_gt, val_ids)
     if coco_eval is None:
         return
 
-    print(f"\nCOCO mAP@0.5:0.95 = {coco_eval.stats[0]:.4f}")
-    print(f"COCO mAP@0.5      = {coco_eval.stats[1]:.4f}")
+    print(f"\nCOCO mAP@0.5:0.95 (held-out val) = {coco_eval.stats[0]:.4f}")
+    print(f"COCO mAP@0.5      (held-out val) = {coco_eval.stats[1]:.4f}")
 
     per_class_df = summarize_per_class_ap(coco_eval, coco_gt)
-    print("\nPer-class AP@0.5:")
+    print("\nPer-class AP@0.5 (held-out val):")
     for row in per_class_df:
         print(f"  {row['class_name']:<28} "
               f"AP@0.5={row['ap_50']:.4f}  "

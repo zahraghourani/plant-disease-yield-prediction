@@ -23,9 +23,9 @@ from tensorflow.keras.models import Model
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data" / "Crop___DIsease"
-CHECKPOINT = ROOT / "checkpoints" / "final_ConvNeXtXLarge.weights.h5"
-OUTPUT_DIR = ROOT / "results" / "gradcam_convnext_xlarge"
-MODEL_NAME = "ConvNeXtXLarge"
+CHECKPOINT = ROOT / "checkpoints" / "final_ConvNeXtLarge.weights.h5"
+OUTPUT_DIR = ROOT / "results" / "gradcam_convnext_large"
+MODEL_NAME = "ConvNeXtLarge"
 NUM_CLASSES = 15
 
 

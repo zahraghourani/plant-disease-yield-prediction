@@ -1,0 +1,16 @@
+class_name,auc
+Corn___Common_Rust,0.9999991788781176
+Corn___Gray_Leaf_Spot,0.9994048616612834
+Corn___Healthy,1.0
+Corn___Leaf_Blight,0.999482790427999
+Invalid,1.0
+Potato___Early_Blight,1.0
+Potato___Healthy,0.999998618433414
+Potato___Late_Blight,0.9998092153561796
+Rice___Brown_Spot,0.9972331571251828
+Rice___Healthy,0.993837233336597
+Rice___Hispa,0.9927956006657745
+Rice___Leaf_Blast,0.9964289867846803
+Wheat___Brown_Rust,0.9999680015154482
+Wheat___Healthy,0.9993025866908494
+Wheat___Yellow_Rust,1.0

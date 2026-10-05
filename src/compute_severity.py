@@ -1,102 +1,89 @@
 """
 compute_severity.py
--------------------
-Proof-of-concept: dynamic disease severity from:
-  - Faster R-CNN (PyTorch, COCO pretrained)  ->  lesion bounding boxes
-  - EfficientNetV2S (TensorFlow/Keras .h5)   ->  class + confidence
 
-Formula:
+FIXED — two serious bugs found and corrected:
+
+1. build_detector() was loading the GENERIC COCO-pretrained Faster RCNN
+   (80 unrelated classes: person, car, dog, etc.) and NEVER loaded the
+   actual trained severity-aware Faster RCNN checkpoint
+   (checkpoints/faster_rcnn_with_severity.pth). Every previous dynamic
+   severity number in this project was computed using a detector that
+   has never seen a plant disease lesion.
+
+2. CLASS_NAMES was the OLD 14-class list (with a dummy "Unknown" 15th
+   slot) — missing Corn___Gray_Leaf_Spot entirely, and not matching the
+   actual alphabetically-sorted class index order used during training.
+   Every predicted class/confidence was silently mismatched.
+
+Also fixed: classifier weights are now loaded via the SAME model_factory
+architecture used everywhere else in this project (get_model), with a
+full state match rather than by_name+skip_mismatch, which can silently
+skip layers.
+
+Formula (unchanged, matches paper Eq. 1):
     severity = (sum of lesion box areas / image area) * CNN_confidence
 
 Outputs saved to results/:
-    severity_scores_per_image.csv   -- one row per image
-    severity_comparison.csv         -- computed vs literature values
+    severity_scores_per_image.csv
+    severity_comparison.csv
 
-HOW TO RUN (from project root):
-    venv39\Scripts\activate
+Run from project root:
     python src/compute_severity.py
 """
 
 from __future__ import annotations
 import os
+import sys
+import json
 from pathlib import Path
+from collections import defaultdict
+
 import numpy as np
 import pandas as pd
 import torch
 import torchvision.transforms.functional as TF
-from torchvision.models.detection import (
-    fasterrcnn_resnet50_fpn,
-    FasterRCNN_ResNet50_FPN_Weights,
-)
-from PIL import Image
 import tensorflow as tf
+from PIL import Image
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "src"))
+
+from model_factory import get_model
+from train_faster_rcnn_fast import SeverityAwareFasterRCNN
 
 # =============================================================================
 #  PATHS
 # =============================================================================
-ROOT = Path(__file__).resolve().parents[1]
+CLASSIFIER_NAME = "EfficientNetV2S"   # deployed model, matches paper Section 3.4
+CLASSIFIER_WEIGHTS = ROOT / "checkpoints" / f"final_{CLASSIFIER_NAME}.weights.h5"
 
-# Your EfficientNetV2S weights
-CLASSIFIER_WEIGHTS = ROOT / "checkpoints" / "final_EfficientNetV2S.weights.h5"
+DETECTOR_CHECKPOINT = ROOT / "checkpoints" / "faster_rcnn_with_severity.pth"
+COCO_ANN_FILE = ROOT / "detection_data" / "annotations" / "train_coco.json"
 
-# detection_data/images — flat folder, filenames start with class name
 IMAGES_DIR = ROOT / "detection_data" / "images"
-
-# Output folder
 OUTPUT_DIR = ROOT / "results"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Images per class to process (keep small for speed)
 N_PER_CLASS = 15
-
-# Input size used during training
 IMG_SIZE = (224, 224)
+NUM_CLASSES = 15
 
 # =============================================================================
-#  CLASS NAMES — 14 classes (your model was trained with 15 but the last
-#  output was shape 15; we keep 14 matching your actual folders and add
-#  a dummy to match the saved weight shape)
+#  CLASS NAMES — must match the ACTUAL alphabetically-sorted order used by
+#  create_data_generators() / flow_from_dataframe during training. This is
+#  the correct, current 15-class list (includes Corn___Gray_Leaf_Spot).
 # =============================================================================
 CLASS_NAMES = [
-    "Corn___Common_Rust",
-    "Corn___Healthy",
-    "Corn___Leaf_Blight",
-    "Invalid",
-    "Potato___Early_Blight",
-    "Potato___Healthy",
-    "Potato___Late_Blight",
-    "Rice___Brown_Spot",
-    "Rice___Healthy",
-    "Rice___Hispa",
-    "Rice___Leaf_Blast",
-    "Wheat___Brown_Rust",
-    "Wheat___Healthy",
-    "Wheat___Yellow_Rust",
-    "Unknown",          # 15th slot to match saved weight shape (256->15)
+    "Corn___Common_Rust", "Corn___Gray_Leaf_Spot", "Corn___Healthy", "Corn___Leaf_Blight",
+    "Invalid", "Potato___Early_Blight", "Potato___Healthy", "Potato___Late_Blight",
+    "Rice___Brown_Spot", "Rice___Healthy", "Rice___Hispa", "Rice___Leaf_Blast",
+    "Wheat___Brown_Rust", "Wheat___Healthy", "Wheat___Yellow_Rust",
 ]
+KNOWN_CLASSES = CLASS_NAMES  # same list; used for filename matching below
 
-# Known disease class prefixes in the flat image folder
-# (extracted from filename before first non-class underscore segment)
-KNOWN_CLASSES = [
-    "Corn___Common_Rust",
-    "Corn___Healthy",
-    "Corn___Leaf_Blight",
-    "Invalid",
-    "Potato___Early_Blight",
-    "Potato___Healthy",
-    "Potato___Late_Blight",
-    "Rice___Brown_Spot",
-    "Rice___Healthy",
-    "Rice___Hispa",
-    "Rice___Leaf_Blast",
-    "Wheat___Brown_Rust",
-    "Wheat___Healthy",
-    "Wheat___Yellow_Rust",
-]
-
-# Literature severity scores
 LITERATURE_SEVERITY = {
     "Corn___Common_Rust":    0.35,
+    "Corn___Gray_Leaf_Spot": 0.35,   # same family as other corn leaf diseases; update if a better literature value is found
     "Corn___Leaf_Blight":    0.40,
     "Corn___Healthy":        0.00,
     "Potato___Early_Blight": 0.20,
@@ -112,111 +99,142 @@ LITERATURE_SEVERITY = {
     "Invalid":               0.00,
 }
 
-# =============================================================================
-#  HELPER: extract true class from filename prefix
-# =============================================================================
+
 def extract_true_class(filename: str) -> str:
     """
-    Filenames look like:
-        Corn___Common_Rust_RS_Rust 2743.JPG
-        Potato___Early_Blight_image (915).JPG
-        Invalid_image (867).jpg
-    We match against KNOWN_CLASSES by checking which known class
-    the filename starts with (longest match wins).
+    Longest-prefix match against KNOWN_CLASSES. Gray Leaf Spot images use
+    a different, UUID-based naming convention (e.g.
+    "00a20f6f-...___RS_GLSp 4655.JPG") rather than a class-name prefix,
+    so they're matched separately via the "GLSp" marker instead.
     """
-    stem = filename  # full filename
-    best = "Unknown"
-    best_len = 0
+    if "glsp" in filename.lower():
+        return "Corn___Gray_Leaf_Spot"
+
+    best, best_len = "Unknown", 0
     for cls in KNOWN_CLASSES:
-        if stem.startswith(cls) and len(cls) > best_len:
-            best = cls
-            best_len = len(cls)
+        if filename.startswith(cls) and len(cls) > best_len:
+            best, best_len = cls, len(cls)
     return best
 
 
 # =============================================================================
-#  STEP 1: Build EfficientNetV2S and load weights
+#  STEP 1: Build EfficientNetV2S via the SAME architecture used in training
 # =============================================================================
 def build_classifier(weights_path: Path) -> tf.keras.Model:
-    print(f"[INFO] Building EfficientNetV2S (15-class output to match saved weights)...")
+    print(f"[INFO] Building {CLASSIFIER_NAME} via model_factory (matches training exactly)...")
     print(f"[INFO] Weights: {weights_path}")
+    if not weights_path.exists():
+        raise FileNotFoundError(f"Classifier weights not found: {weights_path}")
 
-    base = tf.keras.applications.EfficientNetV2S(
-        include_top=False,
-        weights=None,
-        input_shape=(224, 224, 3),
-        pooling="avg",
+    model, preprocess_func, input_size = get_model(
+        CLASSIFIER_NAME, num_classes=NUM_CLASSES, base_weights=None
     )
-    base.trainable = False
-
-    inputs  = tf.keras.Input(shape=(224, 224, 3))
-    x       = base(inputs, training=False)
-    x       = tf.keras.layers.BatchNormalization()(x)
-    x       = tf.keras.layers.Dense(512, activation="relu")(x)
-    x       = tf.keras.layers.Dropout(0.5)(x)
-    x       = tf.keras.layers.Dense(256, activation="relu")(x)
-    x       = tf.keras.layers.Dropout(0.3)(x)
-    # 15 outputs to match the saved weight shape (256, 15)
-    outputs = tf.keras.layers.Dense(15, activation="softmax")(x)
-
-    model = tf.keras.Model(inputs, outputs)
-
-    # Load weights — by_name matches layers by name, skips shape mismatches
-    model.load_weights(str(weights_path), by_name=True, skip_mismatch=True)
-    print("[INFO] Classifier ready.")
-    return model
+    # Full, exact load — no by_name/skip_mismatch silent-skip risk
+    model.load_weights(str(weights_path))
+    print("[INFO] Classifier ready (full weight match).")
+    return model, preprocess_func, input_size
 
 
 # =============================================================================
-#  STEP 2: Load Faster R-CNN
+#  STEP 2: Load the ACTUAL trained severity-aware Faster RCNN
 # =============================================================================
-def build_detector() -> torch.nn.Module:
-    print("[INFO] Loading Faster R-CNN (COCO pretrained)...")
-    weights = FasterRCNN_ResNet50_FPN_Weights.DEFAULT
-    model   = fasterrcnn_resnet50_fpn(weights=weights)
+def build_detector(checkpoint_path: Path, coco_ann_file: Path):
+    print(f"[INFO] Loading TRAINED severity-aware Faster RCNN: {checkpoint_path}")
+    if not checkpoint_path.exists():
+        raise FileNotFoundError(
+            f"Faster RCNN checkpoint not found: {checkpoint_path}\n"
+            f"This must be the trained checkpoint from train_faster_rcnn_fast.py, "
+            f"NOT a generic COCO-pretrained model."
+        )
+
+    with open(coco_ann_file) as f:
+        coco_json = json.load(f)
+    # category_id -> class name, as actually assigned in convert_to_coco.py
+    cat_id_to_name = {c['id']: c['name'] for c in coco_json['categories']}
+    num_det_classes = len(cat_id_to_name) + 1  # +1 for background
+
+    model = SeverityAwareFasterRCNN(num_classes=num_det_classes)
+    ckpt = torch.load(str(checkpoint_path), map_location='cpu')
+    model.load_state_dict(ckpt['model_state_dict'])
     model.eval()
-    print("[INFO] Detector ready.")
-    return model
+    print(f"[INFO] Detector ready — TRAINED weights loaded "
+          f"(epoch {ckpt.get('epoch', '?')}, loss {ckpt.get('loss', '?')}).")
+    return model, cat_id_to_name
 
 
 # =============================================================================
 #  STEP 3: Compute severity for one image
 # =============================================================================
+def union_area_fraction(boxes_xyxy, img_w, img_h, grid_size=200):
+    """
+    Computes the fraction of image area covered by the UNION of the given
+    boxes (normalized 0..1 coordinates on a rasterized grid), rather than
+    naively summing individual box areas. Naive summing double-counts
+    pixels where boxes from different predicted categories overlap,
+    which can push "lesion area" past the actual image area (observed:
+    ratios >1.0 before this fix).
+    """
+    if len(boxes_xyxy) == 0:
+        return 0.0
+    mask = np.zeros((grid_size, grid_size), dtype=bool)
+    for (x0, y0, x1, y1) in boxes_xyxy:
+        gx0 = max(0, min(grid_size - 1, int(x0 / img_w * grid_size)))
+        gx1 = max(gx0 + 1, min(grid_size, int(np.ceil(x1 / img_w * grid_size))))
+        gy0 = max(0, min(grid_size - 1, int(y0 / img_h * grid_size)))
+        gy1 = max(gy0 + 1, min(grid_size, int(np.ceil(y1 / img_h * grid_size))))
+        mask[gy0:gy1, gx0:gx1] = True
+    return float(mask.sum()) / (grid_size * grid_size)
+
+
 def compute_one(
     image_path: str,
-    detector: torch.nn.Module,
+    detector,
     classifier: tf.keras.Model,
+    preprocess_func,
+    input_size,
     true_class: str,
+    cat_id_to_name: dict,
     conf_threshold: float = 0.4,
 ) -> dict:
+    pil_img = Image.open(image_path).convert("RGB")
+    img_w, img_h = pil_img.width, pil_img.height
+    image_area = img_w * img_h
 
-    pil_img    = Image.open(image_path).convert("RGB")
-    image_area = pil_img.width * pil_img.height
-
-    # -- Faster R-CNN: bounding boxes -----------------------------------------
+    # -- Faster R-CNN (TRAINED): bounding boxes --------------------------------
     img_tensor = TF.to_tensor(pil_img)
     with torch.no_grad():
         dets = detector([img_tensor])[0]
 
-    boxes = dets["boxes"][dets["scores"] >= conf_threshold]
-    total_lesion_area = sum(
-        (b[2] - b[0]).item() * (b[3] - b[1]).item() for b in boxes
-    )
-    n_boxes = len(boxes)
+    keep = dets["scores"] >= conf_threshold
+    all_boxes = dets["boxes"][keep]
+    all_labels = dets["labels"][keep]
 
-    # -- EfficientNetV2S: class + confidence ----------------------------------
-    arr   = np.array(pil_img.resize(IMG_SIZE), dtype=np.float32)
-    arr   = tf.keras.applications.efficientnet_v2.preprocess_input(arr)
-    probs = classifier.predict(arr[None], verbose=0)[0]  # shape (15,)
+    # Exclude boxes predicted as a "Healthy" or "Invalid" category — these
+    # are not lesions. A box covering an entire healthy leaf (Grounding
+    # DINO's own annotation convention for healthy classes, Section
+    # 3.3.1) was previously being counted as "lesion area", inflating
+    # severity for healthy images far above actual diseased ones.
+    lesion_boxes = []
+    for box, label_id in zip(all_boxes, all_labels):
+        cat_name = cat_id_to_name.get(int(label_id), "")
+        if "Healthy" in cat_name or cat_name == "Invalid":
+            continue
+        lesion_boxes.append(box.tolist())
 
-    pred_idx   = int(np.argmax(probs))
+    n_boxes = len(lesion_boxes)
+    lesion_ratio_union = union_area_fraction(lesion_boxes, img_w, img_h)
+    total_lesion_area = lesion_ratio_union * image_area  # for reporting only
+
+    # -- EfficientNetV2S (correct 15-class mapping): class + confidence --------
+    arr = np.array(pil_img.resize(input_size), dtype=np.float32)
+    arr = preprocess_func(arr)
+    probs = classifier.predict(arr[None], verbose=0)[0]
+
+    pred_idx = int(np.argmax(probs))
     confidence = float(probs[pred_idx])
-    pred_class = (
-        CLASS_NAMES[pred_idx] if pred_idx < len(CLASS_NAMES) else "Unknown"
-    )
+    pred_class = CLASS_NAMES[pred_idx] if pred_idx < len(CLASS_NAMES) else "Unknown"
 
-    # -- Severity formula ------------------------------------------------------
-    severity = (total_lesion_area / image_area) * confidence
+    severity = lesion_ratio_union * confidence
 
     return {
         "image":             os.path.basename(image_path),
@@ -226,7 +244,7 @@ def compute_one(
         "n_boxes":           n_boxes,
         "total_lesion_area": round(total_lesion_area, 2),
         "image_area":        image_area,
-        "lesion_ratio":      round(total_lesion_area / image_area, 4),
+        "lesion_ratio":      round(lesion_ratio_union, 4),
         "severity_score":    round(severity, 4),
     }
 
@@ -234,30 +252,20 @@ def compute_one(
 # =============================================================================
 #  STEP 4: Loop over flat images folder, sample N_PER_CLASS per class
 # =============================================================================
-def run_flat_folder(detector, classifier):
-    # Group images by true class extracted from filename
-    from collections import defaultdict
+def run_flat_folder(detector, classifier, preprocess_func, input_size, cat_id_to_name):
     class_images = defaultdict(list)
-
     all_images = (
-        list(IMAGES_DIR.glob("*.jpg")) +
-        list(IMAGES_DIR.glob("*.JPG")) +
-        list(IMAGES_DIR.glob("*.jpeg")) +
-        list(IMAGES_DIR.glob("*.png"))
+        list(IMAGES_DIR.glob("*.jpg")) + list(IMAGES_DIR.glob("*.JPG")) +
+        list(IMAGES_DIR.glob("*.jpeg")) + list(IMAGES_DIR.glob("*.png"))
     )
-
     if not all_images:
-        raise FileNotFoundError(
-            f"No images found in {IMAGES_DIR}.\n"
-            f"Check that IMAGES_DIR is correct."
-        )
+        raise FileNotFoundError(f"No images found in {IMAGES_DIR}.")
 
     for img_path in all_images:
         cls = extract_true_class(img_path.name)
         class_images[cls].append(img_path)
 
-    print(f"[INFO] Found {len(all_images)} images across "
-          f"{len(class_images)} classes in flat folder.")
+    print(f"[INFO] Found {len(all_images)} images across {len(class_images)} classes.")
     for cls, imgs in sorted(class_images.items()):
         print(f"       {cls}: {len(imgs)} images")
 
@@ -268,7 +276,8 @@ def run_flat_folder(detector, classifier):
         for p in imgs:
             try:
                 rows.append(compute_one(
-                    str(p), detector, classifier, true_class=cls
+                    str(p), detector, classifier, preprocess_func, input_size,
+                    true_class=cls, cat_id_to_name=cat_id_to_name
                 ))
             except Exception as e:
                 print(f"  [WARN] {p.name}: {e}")
@@ -292,53 +301,29 @@ def make_comparison(df: pd.DataFrame) -> pd.DataFrame:
         .reset_index()
         .rename(columns={"true_class": "disease_class"})
     )
-    avg["literature_severity"] = avg["disease_class"].map(
-        LITERATURE_SEVERITY
-    ).fillna("N/A")
-    avg["computed_mean"]     = avg["computed_mean"].round(4)
-    avg["computed_std"]      = avg["computed_std"].round(4)
-    avg["avg_lesion_ratio"]  = avg["avg_lesion_ratio"].round(4)
-    avg["avg_confidence"]    = avg["avg_confidence"].round(4)
-
-    return avg[[
-        "disease_class", "n_images",
-        "literature_severity",
-        "computed_mean", "computed_std",
-        "avg_lesion_ratio", "avg_confidence",
-    ]]
+    avg["literature_severity"] = avg["disease_class"].map(LITERATURE_SEVERITY).fillna("N/A")
+    for col in ("computed_mean", "computed_std", "avg_lesion_ratio", "avg_confidence"):
+        avg[col] = avg[col].round(4)
+    return avg[["disease_class", "n_images", "literature_severity",
+                "computed_mean", "computed_std", "avg_lesion_ratio", "avg_confidence"]]
 
 
 # =============================================================================
 #  MAIN
 # =============================================================================
 def main():
-    # -- Validate paths -------------------------------------------------------
-    if not CLASSIFIER_WEIGHTS.exists():
-        ckpt_dir = ROOT / "checkpoints"
-        available = list(ckpt_dir.glob("*.h5")) if ckpt_dir.exists() else []
-        raise FileNotFoundError(
-            f"\n[ERROR] Weights not found:\n  {CLASSIFIER_WEIGHTS}\n\n"
-            f"Available .h5 files:\n" +
-            ("\n".join(f"  {p.name}" for p in available) or "  (none)")
-        )
-
     if not IMAGES_DIR.exists():
-        raise FileNotFoundError(
-            f"\n[ERROR] Images folder not found:\n  {IMAGES_DIR}"
-        )
+        raise FileNotFoundError(f"Images folder not found: {IMAGES_DIR}")
 
-    # -- Load models ----------------------------------------------------------
-    classifier = build_classifier(CLASSIFIER_WEIGHTS)
-    detector   = build_detector()
+    classifier, preprocess_func, input_size = build_classifier(CLASSIFIER_WEIGHTS)
+    detector, cat_id_to_name = build_detector(DETECTOR_CHECKPOINT, COCO_ANN_FILE)
+    print(f"[INFO] Detector trained on categories: {list(cat_id_to_name.values())}")
 
-    # -- Run ------------------------------------------------------------------
-    df = run_flat_folder(detector, classifier)
-
+    df = run_flat_folder(detector, classifier, preprocess_func, input_size, cat_id_to_name)
     if df.empty:
         print("[ERROR] No results. Check image paths.")
         return
 
-    # -- Save -----------------------------------------------------------------
     out1 = OUTPUT_DIR / "severity_scores_per_image.csv"
     df.to_csv(out1, index=False)
     print(f"\n[SAVED] {out1}")
@@ -348,12 +333,11 @@ def main():
     comp.to_csv(out2, index=False)
     print(f"[SAVED] {out2}")
 
-    # -- Print ----------------------------------------------------------------
-    print("\n" + "="*75)
-    print("  SEVERITY: Computed (Dynamic) vs Literature (Fixed)")
-    print("="*75)
+    print("\n" + "=" * 75)
+    print("  SEVERITY: Computed (Dynamic, TRAINED detector) vs Literature (Fixed)")
+    print("=" * 75)
     print(comp.to_string(index=False))
-    print("="*75)
+    print("=" * 75)
     print(f"\n[DONE] Results saved to: {OUTPUT_DIR}")
 
 
