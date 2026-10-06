@@ -36,7 +36,7 @@ ROOT            = Path(__file__).resolve().parents[1]
 DATA_DIR        = ROOT / "data" / "yield_data" / "yield_df.csv"
 IMAGE_DATA_DIR  = ROOT / "data" / "Crop___DIsease"
 CHECKPOINT      = ROOT / "checkpoints" / "final_EfficientNetV2S.weights.h5"
-LEADERBOARD     = ROOT / "results" / "all_models_leaderboard.csv"
+LEADERBOARD     = ROOT / "clean_scores_all38.csv"
 RCNN_SEVERITY   = ROOT / "checkpoints" / "faster_rcnn_with_severity.pth"
 RCNN_PLAIN      = ROOT / "checkpoints" / "faster_rcnn_model.pth"
 
@@ -439,12 +439,27 @@ def get_predictor() -> YieldPredictor:
         PREDICTOR = YieldPredictor()
     return PREDICTOR
 
+# def load_saved_disease_accuracy() -> float | None:
+#     if not LEADERBOARD.exists():
+#         return None
+#     lb = pd.read_csv(LEADERBOARD)
+#     m  = lb[lb["model_name"] == DISEASE_MODEL_NAME]
+#     return float(m.iloc[0]["accuracy"]) if not m.empty else None
+
 def load_saved_disease_accuracy() -> float | None:
     if not LEADERBOARD.exists():
         return None
     lb = pd.read_csv(LEADERBOARD)
-    m  = lb[lb["model_name"] == DISEASE_MODEL_NAME]
-    return float(m.iloc[0]["accuracy"]) if not m.empty else None
+    cols = {c.lower(): c for c in lb.columns}
+    mcol = next((cols[c] for c in cols if "model" in c), lb.columns[0])
+    acol = cols.get("accuracy") or cols.get("acc") or next((cols[c] for c in cols if "acc" in c), None)
+    if acol is None:
+        return None
+    m = lb[lb[mcol] == DISEASE_MODEL_NAME]
+    if m.empty:
+        return None
+    v = float(m.iloc[0][acol])
+    return v / 100 if v > 1 else v      # accept 0.9335 or 93.35
 
 def fmt_number(v: float) -> str:  return f"{v:,.0f}"
 def fmt_percent(v: float | None) -> str:
@@ -725,9 +740,12 @@ class PredictionHandler(BaseHTTPRequestHandler):
             environ={"REQUEST_METHOD":"POST",
                      "CONTENT_TYPE":self.headers.get("content-type")},
         )
-        upload = form.get("image")
-        if upload is None or not getattr(upload,"file",None):
+        upload = form["image"] if "image" in form else None
+        if upload is None or not getattr(upload, "file", None) or not getattr(upload, "filename", ""):
             raise ValueError("Please upload an image.")
+        # upload = form.get("image")
+        # if upload is None or not getattr(upload,"file",None):
+        #     raise ValueError("Please upload an image.")
         image_bytes = upload.file.read()
         if not image_bytes:
             raise ValueError("The uploaded image is empty.")

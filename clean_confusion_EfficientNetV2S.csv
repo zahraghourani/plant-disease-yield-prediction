@@ -1,0 +1,16 @@
+,Corn___Common_Rust,Corn___Gray_Leaf_Spot,Corn___Healthy,Corn___Leaf_Blight,Invalid,Potato___Early_Blight,Potato___Healthy,Potato___Late_Blight,Rice___Brown_Spot,Rice___Healthy,Rice___Hispa,Rice___Leaf_Blast,Wheat___Brown_Rust,Wheat___Healthy,Wheat___Yellow_Rust
+Corn___Common_Rust,171,0,0,1,0,0,0,0,0,0,0,0,0,0,0
+Corn___Gray_Leaf_Spot,0,74,0,3,0,0,0,0,0,0,0,0,0,0,0
+Corn___Healthy,0,1,166,0,0,0,0,0,0,0,0,0,0,0,0
+Corn___Leaf_Blight,0,4,0,133,0,0,0,0,0,0,0,0,0,0,0
+Invalid,0,0,0,1,232,0,0,0,0,0,0,0,0,0,0
+Potato___Early_Blight,0,0,0,0,0,22,0,0,0,0,0,0,0,0,0
+Potato___Healthy,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0
+Potato___Late_Blight,0,0,0,0,0,0,0,30,0,0,0,0,0,0,0
+Rice___Brown_Spot,0,0,0,0,0,0,0,0,69,7,1,6,0,0,0
+Rice___Healthy,0,0,0,0,0,0,0,0,2,67,7,2,0,0,0
+Rice___Hispa,0,0,0,0,0,0,0,0,4,27,39,8,0,0,0
+Rice___Leaf_Blast,0,0,0,0,0,0,0,0,13,12,14,105,0,0,0
+Wheat___Brown_Rust,0,0,0,0,0,0,0,0,0,0,0,0,168,0,1
+Wheat___Healthy,0,0,0,0,0,0,0,0,0,0,0,0,1,208,0
+Wheat___Yellow_Rust,0,0,0,0,0,0,0,0,0,0,0,0,2,1,170

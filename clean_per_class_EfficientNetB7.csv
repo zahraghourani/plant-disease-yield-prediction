@@ -1,0 +1,17 @@
+class,precision,recall,f1,support
+Corn___Common_Rust,1.0000,1.0000,1.0000,172
+Corn___Gray_Leaf_Spot,0.9467,0.9221,0.9342,77
+Corn___Healthy,0.9940,1.0000,0.9970,167
+Corn___Leaf_Blight,0.9565,0.9635,0.9600,137
+Invalid,0.9957,1.0000,0.9979,233
+Potato___Early_Blight,1.0000,1.0000,1.0000,22
+Potato___Healthy,1.0000,1.0000,1.0000,2
+Potato___Late_Blight,1.0000,1.0000,1.0000,30
+Rice___Brown_Spot,0.8500,0.8193,0.8344,83
+Rice___Healthy,0.7042,0.6410,0.6711,78
+Rice___Hispa,0.5648,0.7821,0.6559,78
+Rice___Leaf_Blast,0.8710,0.7500,0.8060,144
+Wheat___Brown_Rust,0.9941,0.9941,0.9941,169
+Wheat___Healthy,1.0000,0.9904,0.9952,209
+Wheat___Yellow_Rust,0.9943,1.0000,0.9971,173
+macro avg (all classes shown),0.9248,0.9242,0.9229,1774
